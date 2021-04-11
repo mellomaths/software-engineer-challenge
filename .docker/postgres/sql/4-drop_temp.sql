@@ -1,0 +1,2 @@
+DROP TABLE Tmp_Users_Priority_One;
+DROP TABLE Tmp_Users_Priority_Two;

@@ -34,6 +34,13 @@ services:
         networks:
             - app-network
         volumes:
+            - .docker/postgres/input/users.csv:/input/users.csv
+            - .docker/postgres/input/lista_relevancia_1.txt:/input/lista_relevancia_1.txt
+            - .docker/postgres/input/lista_relevancia_2.txt:/input/lista_relevancia_2.txt
+            - .docker/postgres/sql/1-init.sql:/docker-entrypoint-initdb.d/1-init.sql
+            - .docker/postgres/sql/2-functions.sql:/docker-entrypoint-initdb.d/2-functions.sql
+            - .docker/postgres/sql/3-data.sql:/docker-entrypoint-initdb.d/3-data.sql
+            - .docker/postgres/sql/4-drop_temp.sql:/docker-entrypoint-initdb.d/4-drop_temp.sql
             - .docker/dbdata:/var/lib/postgresql/data
 
     pg-admin:
