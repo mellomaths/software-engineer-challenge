@@ -12,7 +12,6 @@ services:
             TYPEORM_PASSWORD: password
             TYPEORM_DATABASE: users_ms
             TYPEORM_PORT: 5432
-
             TYPEORM_ENTITIES: "src/**/*.model.js"
             TYPEORM_ENTITIES_DIR: "src/models"
             TYPEORM_MIGRATIONS: "src/migrations/**/*.js"
@@ -28,7 +27,7 @@ services:
         ports:
             - '5432:5432'
         environment:
-            POSTGRES_DB: "USERS_MS"
+            POSTGRES_DB: "users_ms"
             POSTGRES_PASSWORD: "password"
             POSTGRES_USER: "postgres"
         networks:
@@ -43,7 +42,7 @@ services:
             - .docker/postgres/sql/4-drop_temp.sql:/docker-entrypoint-initdb.d/4-drop_temp.sql
             - .docker/dbdata:/var/lib/postgresql/data
 
-    pg-admin:
+    pgadmin:
         image: dpage/pgadmin4
         ports:
             - '8081:80'
