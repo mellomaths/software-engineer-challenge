@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { ClientCredentialsModule } from './client-credentials/client-credentials.module';
+import { AuthService } from './services/auth.service';
+import { ClientCredentialsService } from './services/client-credentials.service';
 
 @Module({
-  providers: [AuthService],
-  imports: [ClientCredentialsModule]
+  providers: [AuthService, ClientCredentialsService],
+  imports: []
 })
 export class AuthModule {}
