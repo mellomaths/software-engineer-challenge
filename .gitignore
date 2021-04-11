@@ -35,3 +35,6 @@ lerna-debug.log*
 
 # Database data 
 .docker/dbdata
+
+# Ignore users.csv file
+.docker/postgres/input/users.csv
