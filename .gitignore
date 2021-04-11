@@ -38,3 +38,6 @@ lerna-debug.log*
 
 # Ignore users.csv file
 .docker/postgres/input/users.csv
+
+# Ignore .env files
+.env
