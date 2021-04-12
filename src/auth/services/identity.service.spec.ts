@@ -59,6 +59,15 @@ describe('IdentityService', () => {
       expect(serviceResponse.payload.client.password).toBeUndefined();
       expect(serviceResponse.payload.client.username).toEqual('TEST_USER');
     });
+
+    it('should validate user already exists', async () => {
+      findOne.mockReturnValue(client);
+
+      const serviceResponse = await service.create(clientRequest);
+      expect(serviceResponse.status).toEqual(422);
+      expect(serviceResponse.description).toEqual('Server was not able to register this client.');
+      expect(serviceResponse.errors).toContainEqual({ code: 'CONFLICT', field: 'username', message: 'Username registered.' })
+    });
   });
 
   describe('findById', () => {
