@@ -169,6 +169,16 @@ describe('IdentityService', () => {
       expect(serviceResponse.payload.client).toBeUndefined();
       expect(serviceResponse.errors.length).toEqual(0);
     });
+
+    it('should fail login passing wrong password', async () => {
+      findOne.mockReturnValue(client);
+
+      const serviceResponse = await service.checkLoginAttempt(client.username, '1234');
+      expect(serviceResponse.status).toEqual(401);
+      expect(serviceResponse.description).toEqual('Bad password');
+      expect(serviceResponse.payload.client).toBeUndefined();
+      expect(serviceResponse.errors.length).toEqual(0);
+    });
   });
 
 });
