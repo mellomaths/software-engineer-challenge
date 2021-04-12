@@ -17,4 +17,6 @@ COPY --from=builder /usr/src/app ./
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 
+RUN npm run typeorm migration:run
+
 CMD ["npm", "run", "start:prod"]
