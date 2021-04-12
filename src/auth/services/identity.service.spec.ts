@@ -37,18 +37,18 @@ describe('IdentityService', () => {
 
   describe('create', () => {
     let client: ClientEntity;
+    let clientRequest = { username: 'TEST_USER', password: '12345678' };
 
     beforeEach(() => {
       client = new ClientEntity();
       client.generateId();
       create.mockImplementation((data) => ({ id: client.id, ...data }));
       save.mockReturnValue(undefined);
-      findOne.mockReturnValue(null);
     });
 
     it('should create client', async () => {
-      // const result = { id: '3640e092-687b-4916-a050-52b4e6108300', username: 'TEST_USER', password: '12345678' };
-      const clientRequest = { username: 'TEST_USER', password: '12345678' };
+      findOne.mockReturnValue(null);
+
       const serviceResponse = await service.create(clientRequest);
       expect(serviceResponse.status).toEqual(201);
       expect(serviceResponse.description).toEqual(
@@ -60,4 +60,27 @@ describe('IdentityService', () => {
       expect(serviceResponse.payload.client.username).toEqual('TEST_USER');
     });
   });
+
+  describe('findById', () => {
+    let client: ClientEntity;
+
+    beforeEach(() => {
+      client = new ClientEntity();
+      client.generateId();
+      client.username = 'TEST_USER';
+      client.password = '12345678';
+      findOne.mockReturnValue(client);
+    });
+
+    it('should find a client by id', async () => {
+      const serviceResponse = await service.findById(client.id);
+      expect(serviceResponse.status).toEqual(200);
+      expect(serviceResponse.description).toEqual('OK');
+      expect(serviceResponse.payload.client).toBeDefined();
+      expect(serviceResponse.payload.client.id).toBeDefined();
+      expect(serviceResponse.payload.client.password).toBeUndefined();
+      expect(serviceResponse.payload.client.username).toEqual('TEST_USER');
+    });
+  });
+
 });
