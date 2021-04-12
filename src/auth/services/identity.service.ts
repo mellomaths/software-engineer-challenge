@@ -27,12 +27,11 @@ export class IdentityService {
   }
 
   async checkLoginAttempt(username: string, attempt: string): Promise<ServiceResponse> {
-    const serviceResponse = await this.findOne(username);
-    if (serviceResponse.status !== 200) {
-      return serviceResponse;
+    const client: ClientEntity = await this.clientRepository.findOne({ where: { username } });
+    if (!client) {
+      const description: string = `Client username=${username} was not found.`;
+      return { status: 404, payload: {}, errors: [], description };
     }
-
-    const client: any = serviceResponse.payload.client;
 
     const passwordMatched: boolean = await this.comparePassword(client.password, attempt);
     if (!passwordMatched) {
