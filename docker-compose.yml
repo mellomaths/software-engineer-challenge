@@ -12,10 +12,10 @@ services:
             TYPEORM_PASSWORD: password
             TYPEORM_DATABASE: users_ms
             TYPEORM_PORT: 5432
-            TYPEORM_ENTITIES: "src/**/*.model.js"
-            TYPEORM_ENTITIES_DIR: "src/models"
-            TYPEORM_MIGRATIONS: "src/migrations/**/*.js"
-            TYPEORM_MIGRATIONS_DIR: "src/migrations"  
+            TYPEORM_ENTITIES: src/**/*.model.ts
+            TYPEORM_ENTITIES_DIR: src/models
+            TYPEORM_MIGRATIONS: src/migrations/**/*.ts
+            TYPEORM_MIGRATIONS_DIR: src/migrations
             TOKEN_SECRET: "NDgzMDE2MDIzNDQwNjIxNjE4.DmNiFQ.C9hWQsCEJoW5Y9mT5oatUjSLKlw"
             TOKEN_EXPIRATION_TIME: 3600
         depends_on:

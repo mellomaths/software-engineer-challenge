@@ -1,9 +1,18 @@
-import { PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, Column, Entity } from 'typeorm';
+import {
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  Column,
+  Entity,
+  BeforeInsert,
+} from 'typeorm';
+
+import { v4 as uuidV4 } from 'uuid';
 
 @Entity('clients')
 export class ClientEntity {
   @PrimaryGeneratedColumn('uuid')
-  readonly id: string;
+  id: string;
 
   @CreateDateColumn()
   readonly createdAt: Date;
@@ -17,4 +26,12 @@ export class ClientEntity {
   @Column('text')
   password: string;
 
+  @BeforeInsert()
+  generateId() {
+    if (this.id) {
+      return;
+    }
+
+    this.id = uuidV4();
+  }
 }
