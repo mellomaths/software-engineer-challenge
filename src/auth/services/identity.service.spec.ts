@@ -159,6 +159,16 @@ describe('IdentityService', () => {
       expect(serviceResponse.payload.client.password).toBeUndefined();
       expect(serviceResponse.payload.client.username).toEqual('TEST_USER');
     });
+
+    it('should fail login for a username that not exists', async () => {
+      findOne.mockReturnValue(null);
+
+      const serviceResponse = await service.checkLoginAttempt(client.username, attempt);
+      expect(serviceResponse.status).toEqual(404);
+      expect(serviceResponse.description).toEqual(`Client username=${client.username} was not found.`);
+      expect(serviceResponse.payload.client).toBeUndefined();
+      expect(serviceResponse.errors.length).toEqual(0);
+    });
   });
 
 });
