@@ -16,6 +16,8 @@ services:
             TYPEORM_ENTITIES_DIR: "src/models"
             TYPEORM_MIGRATIONS: "src/migrations/**/*.js"
             TYPEORM_MIGRATIONS_DIR: "src/migrations"  
+            TOKEN_SECRET: "NDgzMDE2MDIzNDQwNjIxNjE4.DmNiFQ.C9hWQsCEJoW5Y9mT5oatUjSLKlw"
+            TOKEN_EXPIRATION_TIME: 3600
         depends_on:
             - postgres
         networks:
