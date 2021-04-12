@@ -3,25 +3,15 @@ services:
   
     app:
         build: .
-        ports:
-            - '3000:3000'
-        environment: 
-            TYPEORM_CONNECTION: postgres
-            TYPEORM_HOST: postgres
-            TYPEORM_USERNAME: postgres
-            TYPEORM_PASSWORD: password
-            TYPEORM_DATABASE: users_ms
-            TYPEORM_PORT: 5432
-            TYPEORM_ENTITIES: src/**/*.model.ts
-            TYPEORM_ENTITIES_DIR: src/models
-            TYPEORM_MIGRATIONS: src/migrations/**/*.ts
-            TYPEORM_MIGRATIONS_DIR: src/migrations
-            TOKEN_SECRET: "NDgzMDE2MDIzNDQwNjIxNjE4.DmNiFQ.C9hWQsCEJoW5Y9mT5oatUjSLKlw"
-            TOKEN_EXPIRATION_TIME: 3600
-        depends_on:
-            - postgres
+        entrypoint: /usr/src/app/.docker/entrypoint.sh
+        ports: 
+          - 3000:3000
+        volumes: 
+          - .:/usr/src/app
+        depends_on: 
+          - postgres
         networks:
-            - app-network
+          - app-network
 
     postgres:
         build: .docker/postgres
@@ -50,8 +40,6 @@ services:
             - '8081:80'
         depends_on:
             - postgres
-        # volumes:
-        #     - ./dbdata/pgadmin:/var/lib/pgadmin
         environment:
             PGADMIN_DEFAULT_EMAIL: "admin@admin"
             PGADMIN_DEFAULT_PASSWORD: "password"

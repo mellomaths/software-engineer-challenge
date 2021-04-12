@@ -1,22 +1,7 @@
-FROM node:14.16.1-alpine3.10 AS builder
+FROM node:14.15.4-alpine3.12
+
+RUN apk add --no-cache bash
+
+RUN npm i -g @nestjs/cli@7.4.1
 
 WORKDIR /usr/src/app
-
-COPY package*.json ./
-
-RUN npm install --only=production
-
-COPY . .
-
-RUN npm run build
-
-FROM node:14.16.1-alpine3.10 AS production
-
-COPY --from=builder /usr/src/app ./
-
-ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
-
-RUN npm run typeorm migration:run
-
-CMD ["npm", "run", "start:prod"]
