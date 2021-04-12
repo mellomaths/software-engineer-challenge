@@ -55,8 +55,25 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Req() request) {
-    return request.user;
+  async getProfile(@Req() request, @Res() response: Response) {
+    const serviceResponse = await this.identityService.findById(request.user.id);
+    let statusCode: HttpStatus;
+
+    if (serviceResponse.status !== 200) {
+      statusCode = HttpStatus.UNAUTHORIZED;
+      return response
+        .status(statusCode)
+        .send({
+          statusCode,
+          message: serviceResponse.description,
+          errors: serviceResponse.errors,
+        });
+    }
+
+    statusCode = HttpStatus.OK;
+    return response
+      .status(statusCode)
+      .send(serviceResponse.payload.client);
   }
 
 }

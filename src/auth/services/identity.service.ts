@@ -27,11 +27,12 @@ export class IdentityService {
   }
 
   async checkLoginAttempt(username: string, attempt: string): Promise<ServiceResponse> {
-    const client: ClientEntity = await this.findOne(username);
-    if (!client) {
-      const description: string = `Client ${username} was not found.`;
-      return { status: 404, payload: {}, errors: [], description };
+    const serviceResponse = await this.findOne(username);
+    if (serviceResponse.status !== 200) {
+      return serviceResponse;
     }
+
+    const client: any = serviceResponse.payload.client;
 
     const passwordMatched: boolean = await this.comparePassword(client.password, attempt);
     if (!passwordMatched) {
@@ -52,13 +53,24 @@ export class IdentityService {
     };
   }
 
-  async findOne(username: string): Promise<ClientEntity | null> {
+  async findOne(username: string): Promise<ServiceResponse> {
     const client: ClientEntity = await this.clientRepository.findOne({ where: { username } });
     if (!client) {
-      return null;
+      const description: string = `Client username=${username} was not found.`;
+      return { status: 404, payload: {}, errors: [], description };
     }
 
-    return client;
+    return {
+      status: 200,
+      payload: {
+        client: {
+          ...client,
+          password: undefined
+        }
+      },
+      errors: [],
+      description: 'OK',
+    };
   }
 
   async validate(client: ClientDto): Promise<ServiceValidationResponse> {
@@ -86,6 +98,26 @@ export class IdentityService {
 
     const { password, ...result } = client;
     return { status: 201, payload: { client: result }, errors: [], description: 'Client successfully created.' };
+  }
+
+  async findById(id: string): Promise<ServiceResponse> {
+    const client: ClientEntity = await this.clientRepository.findOne({ where: { id } });
+    if (!client) {
+      const description: string = `Client id=${id} was not found.`;
+      return { status: 404, payload: {}, errors: [], description };
+    }
+
+    return {
+      status: 200,
+      payload: {
+        client: {
+          ...client,
+          password: undefined
+        }
+      },
+      errors: [],
+      description: 'OK',
+    };
   }
 
 }
