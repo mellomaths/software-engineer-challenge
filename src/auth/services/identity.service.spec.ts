@@ -136,4 +136,29 @@ describe('IdentityService', () => {
     });
   });
 
+  describe('checkLoginAttempt', () => {
+    let client: ClientEntity;
+    let attempt = '12345678';
+
+    beforeEach(() => {
+      client = new ClientEntity();
+      client.generateId();
+      client.username = 'TEST_USER';
+      // Hash for '12345678' password
+      client.password = "$2y$10$bOPunxJneQZ7m2bd2ADMmOEtrx4ZImsb/mywNRqlx7vdN.esutTVG";
+    });
+
+    it('should login with correct password attempt', async () => {
+      findOne.mockReturnValue(client);
+
+      const serviceResponse = await service.checkLoginAttempt(client.username, attempt);
+      expect(serviceResponse.status).toEqual(200);
+      expect(serviceResponse.description).toEqual('OK');
+      expect(serviceResponse.payload.client).toBeDefined();
+      expect(serviceResponse.payload.client.id).toBeDefined();
+      expect(serviceResponse.payload.client.password).toBeUndefined();
+      expect(serviceResponse.payload.client.username).toEqual('TEST_USER');
+    });
+  });
+
 });
