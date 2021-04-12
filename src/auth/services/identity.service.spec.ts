@@ -78,10 +78,11 @@ describe('IdentityService', () => {
       client.generateId();
       client.username = 'TEST_USER';
       client.password = '12345678';
-      findOne.mockReturnValue(client);
     });
 
     it('should find a client by id', async () => {
+      findOne.mockReturnValue(client);
+
       const serviceResponse = await service.findById(client.id);
       expect(serviceResponse.status).toEqual(200);
       expect(serviceResponse.description).toEqual('OK');
@@ -89,6 +90,16 @@ describe('IdentityService', () => {
       expect(serviceResponse.payload.client.id).toBeDefined();
       expect(serviceResponse.payload.client.password).toBeUndefined();
       expect(serviceResponse.payload.client.username).toEqual('TEST_USER');
+    });
+
+    it('should not find the client', async () => {
+      findOne.mockReturnValue(null);
+      
+      const serviceResponse = await service.findById(client.id);
+      expect(serviceResponse.status).toEqual(404);
+      expect(serviceResponse.description).toEqual(`Client id=${client.id} was not found.`);
+      expect(serviceResponse.payload.client).toBeUndefined();
+      expect(serviceResponse.errors.length).toEqual(0);
     });
   });
 
