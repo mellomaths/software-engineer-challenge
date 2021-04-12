@@ -92,12 +92,45 @@ describe('IdentityService', () => {
       expect(serviceResponse.payload.client.username).toEqual('TEST_USER');
     });
 
-    it('should not find the client', async () => {
+    it('should not find the client by id', async () => {
       findOne.mockReturnValue(null);
       
       const serviceResponse = await service.findById(client.id);
       expect(serviceResponse.status).toEqual(404);
       expect(serviceResponse.description).toEqual(`Client id=${client.id} was not found.`);
+      expect(serviceResponse.payload.client).toBeUndefined();
+      expect(serviceResponse.errors.length).toEqual(0);
+    });
+  });
+
+  describe('findOne', () => {
+    let client: ClientEntity;
+
+    beforeEach(() => {
+      client = new ClientEntity();
+      client.generateId();
+      client.username = 'TEST_USER';
+      client.password = '12345678';
+    });
+
+    it('should find a client by username', async () => {
+      findOne.mockReturnValue(client);
+
+      const serviceResponse = await service.findOne(client.username);
+      expect(serviceResponse.status).toEqual(200);
+      expect(serviceResponse.description).toEqual('OK');
+      expect(serviceResponse.payload.client).toBeDefined();
+      expect(serviceResponse.payload.client.id).toBeDefined();
+      expect(serviceResponse.payload.client.password).toBeUndefined();
+      expect(serviceResponse.payload.client.username).toEqual('TEST_USER');
+    });
+
+    it('should not find the client by username', async () => {
+      findOne.mockReturnValue(null);
+      
+      const serviceResponse = await service.findOne(client.username);
+      expect(serviceResponse.status).toEqual(404);
+      expect(serviceResponse.description).toEqual(`Client username=${client.username} was not found.`);
       expect(serviceResponse.payload.client).toBeUndefined();
       expect(serviceResponse.errors.length).toEqual(0);
     });
