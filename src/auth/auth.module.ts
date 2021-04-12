@@ -9,6 +9,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import authConfig from 'src/config/auth.config';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ClientEntity } from './entities/client.entity';
 
 @Module({
   imports: [
@@ -26,8 +28,9 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
       }),
       inject: [ConfigService],
     }),
+    TypeOrmModule.forFeature([ClientEntity])
   ],
-  providers: [AuthService, IdentityService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, IdentityService, LocalStrategy, JwtStrategy, JwtAuthGuard],
   controllers: [AuthController],
   exports: [JwtAuthGuard]
 })

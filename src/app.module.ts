@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { ClientEntity } from './auth/entities/client.entity';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { AuthModule } from './auth/auth.module';
       username: process.env.TYPEORM_USERNAME,
       password: process.env.TYPEORM_PASSWORD,
       database: process.env.TYPEORM_DATABASE,
-      entities: [],
+      entities: [ClientEntity],
     }),
     AuthModule
   ],
