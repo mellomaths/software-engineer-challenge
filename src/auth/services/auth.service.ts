@@ -9,11 +9,10 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validate(username: string, pass: string): Promise<any> {
-    const client = await this.identityService.findOne(username);
-    if (client && client.password === pass) {
-      const { password, ...result } = client;
-      return result;
+  async validate(username: string, attempt: string): Promise<any> {
+    const serviceResponse = await this.identityService.checkLoginAttempt(username, attempt);
+    if (serviceResponse.status === 200) {
+      return serviceResponse.payload.client;
     }
 
     return null;

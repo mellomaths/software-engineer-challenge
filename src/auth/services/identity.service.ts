@@ -42,7 +42,10 @@ export class IdentityService {
     return {
       status: 200,
       payload: {
-        ...client
+        client: {
+          ...client,
+          password: undefined
+        }
       },
       errors: [],
       description: 'OK',
