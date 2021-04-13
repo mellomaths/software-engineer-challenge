@@ -2,26 +2,12 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { mockedConfigService } from 'test/mocks/config.service';
+import { mockedJwtService } from 'test/mocks/jwt.service';
 import { ClientEntity } from '../entities/client.entity';
 
 import { AuthService } from './auth.service';
 import { IdentityService } from './identity.service';
-
-const mockedConfigService = {
-  get(key: string) {
-    switch (key) {
-      case 'auth.jwt.secret':
-        return 'NDgzMDE2MDIzNDQwNjIxNjE4.DmNiFQ.C9hWQsCEJoW5Y9mT5oatUjSLKlw';
-      case 'auth.jwt.expirationTime':
-        return 3600;
-    }
-  },
-};
-
-const mockedJwtService = {
-  sign: () =>
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3Y2Q4N2M5LTA3YmYtNGE1Mi1hYTA5LTBiNjZiNjBkZTBmYiIsInVzZXJuYW1lIjoibWVsbG9tYXRocyIsInN1YiI6Ijc3Y2Q4N2M5LTA3YmYtNGE1Mi1hYTA5LTBiNjZiNjBkZTBmYiIsImlhdCI6MTYxODIwMTQyOSwiZXhwIjoxNjE4MjA1MDI5fQ.Zc8-SP3qD9tSH_pWYbqWcL0l8TzF6l0CtdLOpE_CYGA',
-};
 
 describe('AuthService', () => {
   let service: AuthService;
