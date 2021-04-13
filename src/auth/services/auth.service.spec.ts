@@ -2,8 +2,9 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { mockedConfigService } from 'test/mocks/config.service';
-import { mockedJwtService } from 'test/mocks/jwt.service';
+import { mockedBcryptService } from '../../../test/mocks/bcrypt.service';
+import { mockedConfigService } from '../../../test/mocks/config.service';
+import { mockedJwtService } from '../../../test/mocks/jwt.service';
 import { ClientEntity } from '../entities/client.entity';
 
 import { AuthService } from './auth.service';
@@ -48,5 +49,29 @@ describe('AuthService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('validate', () => {
+    let client: ClientEntity;
+    let attempt = '12345678';
+
+    beforeEach(() => {
+      client = new ClientEntity();
+      client.generateId();
+      client.username = 'TEST_USER';
+      client.password = mockedBcryptService.hash();
+    });
+
+    it('should validate a client with correct password attempt', async () => {
+      findOne.mockReturnValue(client);
+
+      const serviceResponse = await service.validate(
+        client.username,
+        attempt,
+      );
+      expect(serviceResponse).toBeDefined();
+      expect(serviceResponse.id).toBeDefined();
+      expect(serviceResponse.username).toBeDefined();
+    });
   });
 });
