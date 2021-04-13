@@ -73,5 +73,15 @@ describe('AuthService', () => {
       expect(serviceResponse.id).toBeDefined();
       expect(serviceResponse.username).toBeDefined();
     });
+
+    it('should validate against bad password', async () => {
+      findOne.mockReturnValue(client);
+
+      const serviceResponse = await service.validate(
+        client.username,
+        '1234',
+      );
+      expect(serviceResponse).toBeNull();
+    });
   });
 });
