@@ -83,5 +83,15 @@ describe('AuthService', () => {
       );
       expect(serviceResponse).toBeNull();
     });
+
+    it('should validate against a not existing client', async () => {
+      findOne.mockReturnValue(null);
+
+      const serviceResponse = await service.validate(
+        client.username,
+        '12345678',
+      );
+      expect(serviceResponse).toBeNull();
+    });
   });
 });
