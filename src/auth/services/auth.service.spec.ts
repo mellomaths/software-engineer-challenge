@@ -94,4 +94,27 @@ describe('AuthService', () => {
       expect(serviceResponse).toBeNull();
     });
   });
+
+  describe('login', () => {
+    let client: ClientEntity;
+
+    beforeEach(() => {
+      client = new ClientEntity();
+      client.id = 'bddae318-1176-4649-a879-ca3bbfed9acb';
+      client.username = 'TEST_USER';
+      client.password = mockedBcryptService.hash();
+    });
+
+    it('should create JWT access_token', async () => {
+      const serviceResponse = await service.login(client);
+      expect(serviceResponse).toBeDefined();
+      expect(serviceResponse.access_token).toBeDefined();
+      const jwtDataPart = serviceResponse.access_token.split('.')[1];
+      const jwt = JSON.parse(Buffer.from(jwtDataPart, 'base64').toString());
+      expect(jwt.id).toEqual(client.id);
+      expect(jwt.sub).toEqual(client.id);
+      expect(jwt.username).toEqual(client.username);
+    });
+  });
+
 });
