@@ -1,0 +1,378 @@
+{
+	"info": {
+		"_postman_id": "9522870b-7ffa-48f1-959a-eee484b1d04f",
+		"name": "users-ms",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "201 /auth/identity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const statusCodeExpected = 201;",
+									"pm.test(\"Status code should be equal to \" + statusCodeExpected, function () {",
+									"    pm.response.to.have.status(statusCodeExpected);",
+									"});",
+									"",
+									"var schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"id\"],",
+									"    \"properties\": {",
+									"        \"id\": {",
+									"            \"type\": \"string\"",
+									"        }",
+									"    }",
+									"};",
+									"",
+									"pm.test('Response body should be validated by the JSON Schema', function () {",
+									"    pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
+									"});",
+									"",
+									"pm.test('Should set the username from request in a global variable', function () {",
+									"    const jsonRequestBody = JSON.parse(pm.request.toJSON().body.raw);",
+									"    const username = jsonRequestBody.username;",
+									"    pm.collectionVariables.set('username', username);",
+									"});",
+									"",
+									"pm.test('Should set user id from response in a global variable', function () {",
+									"    const id = pm.response.json().id;",
+									"    pm.collectionVariables.set('user_id', id);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"test{{$timestamp}}\",\n    \"password\": \"12345678\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/identity",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"identity"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "201 /auth/login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const statusCodeExpected = 201;",
+									"pm.test(\"Status code should be equal to \" + statusCodeExpected, function () {",
+									"    pm.response.to.have.status(statusCodeExpected);",
+									"});",
+									"",
+									"var schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"access_token\"],",
+									"    \"properties\": {",
+									"        \"access_token\": {",
+									"            \"type\": \"string\"",
+									"        }",
+									"    }",
+									"};",
+									"",
+									"pm.test('Response body should be validated by the JSON Schema', function () {",
+									"    pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
+									"});",
+									"",
+									"pm.test('Should set the access_token from response in a global variable', function () {",
+									"    const access_token = pm.response.json().access_token;",
+									"    pm.collectionVariables.set('access_token', access_token);",
+									"});",
+									"",
+									"pm.test('Should open the JWT successfully', function () {",
+									"    const access_token = pm.response.json().access_token;",
+									"    const decoded = decodeJwt(access_token);",
+									"    pm.expect(decoded).have.property('header');",
+									"    pm.expect(decoded).have.property('payload');",
+									"    pm.expect(decoded).have.property('signature');",
+									"});",
+									"",
+									"pm.test('JWT Payload should have properties: sub, id, username', function () {",
+									"    const access_token = pm.response.json().access_token;",
+									"    const decoded = decodeJwt(access_token);",
+									"    const payload = decoded.payload;",
+									"",
+									"    pm.expect(payload).have.property('id');",
+									"    pm.expect(payload).have.property('username');",
+									"    pm.expect(payload).have.property('sub');",
+									"});",
+									"",
+									"pm.test('The id from JWT Payload should be equal to user id from the user used to login', function () {",
+									"    const access_token = pm.response.json().access_token;",
+									"    const decoded = decodeJwt(access_token);",
+									"    const payload = decoded.payload;",
+									"",
+									"    const userIdExpected = pm.collectionVariables.get('user_id');",
+									"    pm.expect(payload.id).to.equal(userIdExpected);",
+									"});",
+									"",
+									"pm.test('The username from JWT Payload should be equal to username used to login', function () {",
+									"    const access_token = pm.response.json().access_token;",
+									"    const decoded = decodeJwt(access_token);",
+									"    const payload = decoded.payload;",
+									"",
+									"    const usernameExpected = pm.collectionVariables.get('username');",
+									"    pm.expect(payload.username).to.equal(usernameExpected);",
+									"});",
+									"",
+									"pm.test('The sub from JWT Payload should be equal to user id from the user used to login', function () {",
+									"    const access_token = pm.response.json().access_token;",
+									"    const decoded = decodeJwt(access_token);",
+									"    const payload = decoded.payload;",
+									"",
+									"    const userIdExpected = pm.collectionVariables.get('user_id');",
+									"    const subExpected = userIdExpected;",
+									"    pm.expect(payload.sub).to.equal(subExpected);",
+									"});",
+									"",
+									"pm.test('Should log the JWT Payload', function () {",
+									"    const access_token = pm.response.json().access_token;",
+									"    const decoded = decodeJwt(access_token);",
+									"    console.log(\"== JWT ==\");",
+									"    console.log(JSON.stringify(decoded.payload));",
+									"});",
+									"",
+									"pm.text",
+									"",
+									"",
+									"",
+									"function decodeJwt(jwt) {",
+									"    const parts = jwt.split('.'); // header, payload, signature",
+									"    const contents = {",
+									"        header: JSON.parse(atob(parts[0])),",
+									"        payload: JSON.parse(atob(parts[1])),",
+									"        signature: atob(parts[2])",
+									"    };",
+									"",
+									"    return contents;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{username}}\",\n    \"password\": \"12345678\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200 /auth/profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const statusCodeExpected = 200;",
+									"pm.test(\"Status code should be equal to \" + statusCodeExpected, function () {",
+									"    pm.response.to.have.status(statusCodeExpected);",
+									"});",
+									"",
+									"var schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"id\", \"createdAt\", \"lastUpdateAt\", \"username\"],",
+									"    \"properties\": {",
+									"        \"id\": {",
+									"            \"type\": \"string\"",
+									"        },",
+									"        \"createdAt\": {",
+									"            \"type\": \"string\"",
+									"        },",
+									"        \"lastUpdateAt\": {",
+									"            \"type\": \"string\"",
+									"        },",
+									"        \"username\": {",
+									"            \"type\": \"string\"",
+									"        }",
+									"    }",
+									"};",
+									"",
+									"pm.test('Response body should be validated by the JSON Schema', function () {",
+									"    pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
+									"});",
+									"",
+									"const userIdExpected = pm.collectionVariables.get('user_id');",
+									"pm.test(\"The user id from response should be equal to \" + userIdExpected, function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.eql(userIdExpected);",
+									"});",
+									"",
+									"const usernameExpected = pm.collectionVariables.get('username');",
+									"pm.test(\"The username from response should be equal to \" + usernameExpected, function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.username).to.eql(usernameExpected);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/auth/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "200 /users?search",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/users?search=mellomaths",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "mellomaths"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "user_id",
+			"value": ""
+		},
+		{
+			"key": "username",
+			"value": ""
+		},
+		{
+			"key": "access_token",
+			"value": ""
+		}
+	]
+}
