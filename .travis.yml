@@ -1,0 +1,24 @@
+language: node_js
+node_js:
+  - '14'
+services:
+  - 'docker'
+env:
+  global:
+    - IMAGE_NAME="mellomaths/software-engineer-challenge"
+cache:
+  directories:
+    - 'node_modules'
+before_script:
+  - npm install
+script: npm test
+after_success:
+  - docker --version
+  - docker build -t ${IMAGE_NAME} -f Dockerfile.production .
+before_deploy:
+  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+deploy:
+  provider: script
+  script: docker push ${IMAGE_NAME}
+notifications:
+  email: false
