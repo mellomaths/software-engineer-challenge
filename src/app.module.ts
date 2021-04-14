@@ -4,6 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AuthModule } from './auth/auth.module';
 import { ClientEntity } from './auth/entities/client.entity';
+import { UserPriorityEntity } from './users/entities/user-priority.entity';
+import { UserEntity } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -16,7 +18,7 @@ import { UsersModule } from './users/users.module';
       username: process.env.TYPEORM_USERNAME,
       password: process.env.TYPEORM_PASSWORD,
       database: process.env.TYPEORM_DATABASE,
-      entities: [ClientEntity],
+      entities: [ClientEntity, UserEntity, UserPriorityEntity],
     }),
     AuthModule,
     UsersModule
