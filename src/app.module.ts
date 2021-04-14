@@ -19,9 +19,10 @@ import { UsersModule } from './users/users.module';
       password: process.env.TYPEORM_PASSWORD,
       database: process.env.TYPEORM_DATABASE,
       entities: [ClientEntity, UserEntity, UserPriorityEntity],
+      logging: true,
     }),
     AuthModule,
-    UsersModule
+    UsersModule,
   ],
   controllers: [],
   providers: [],
