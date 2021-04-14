@@ -1,8 +1,5 @@
-import {
-  Column,
-  Entity,
-  PrimaryColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
+import { UserPriorityEntity } from './user-priority.entity';
 
 @Entity('users')
 export class UserEntity {
@@ -14,4 +11,8 @@ export class UserEntity {
 
   @Column('text')
   username: string;
+
+  @OneToOne((type) => UserPriorityEntity)
+  @JoinColumn()
+  priority: UserPriorityEntity;
 }
