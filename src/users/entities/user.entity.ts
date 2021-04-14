@@ -12,7 +12,16 @@ export class UserEntity {
   @Column('text')
   username: string;
 
-  @OneToOne((type) => UserPriorityEntity)
-  @JoinColumn()
+  @OneToOne((type) => UserPriorityEntity, { eager: true, primary: true })
+  @JoinColumn({ name: 'id', referencedColumnName: 'user_id' })
   priority: UserPriorityEntity;
+
+  getPriorityNumber = () => {
+    if (!this.priority) {
+      return Number.POSITIVE_INFINITY;
+    }
+
+    return this.priority.priority_num;
+  }
+
 }
