@@ -1,6 +1,6 @@
 ![PicPay](https://user-images.githubusercontent.com/1765696/26998603-711fcf30-4d5c-11e7-9281-0d9eb20337ad.png)
 
-[![Build Status](https://travis-ci.org/mellomaths/software-engineer-challenge.svg?branch=dev)](https://travis-ci.org/mellomaths/software-engineer-challenge)
+[![Build Status](https://www.travis-ci.com/mellomaths/software-engineer-challenge.svg?branch=main)](https://www.travis-ci.com/mellomaths/software-engineer-challenge)
 
 # Teste Backend
 
