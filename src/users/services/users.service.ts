@@ -14,6 +14,6 @@ export class UsersService {
   ) {}
 
   findUserByKeyword(keyword: string) {
-    return this.usersRepository.find({ where: { name: Like(`%${keyword}%`) } });
+    return this.usersRepository.find({ where: { fullname: Like(`%${keyword}%`) } });
   }
 }
