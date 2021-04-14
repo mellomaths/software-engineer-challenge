@@ -1,10 +1,10 @@
-import { Column, Entity } from 'typeorm';
+import { Entity, PrimaryColumn } from 'typeorm';
 
 @Entity('users_priority')
 export class UserPriorityEntity {
-  @Column('text')
+  @PrimaryColumn('text')
   user_id: string;
 
-  @Column('int')
+  @PrimaryColumn('int')
   priority_num: string;
 }
