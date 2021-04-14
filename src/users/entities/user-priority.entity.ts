@@ -6,5 +6,5 @@ export class UserPriorityEntity {
   user_id: string;
 
   @PrimaryColumn('int')
-  priority_num: string;
+  priority_num: number;
 }
