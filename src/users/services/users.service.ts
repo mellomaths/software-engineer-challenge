@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
 import { UserPriorityEntity } from '../entities/user-priority.entity';
 
@@ -14,6 +14,6 @@ export class UsersService {
   ) {}
 
   findUserByKeyword(keyword: string) {
-      
+    return this.usersRepository.find({ where: { name: Like(`%${keyword}%`) } });
   }
 }
