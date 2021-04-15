@@ -6,7 +6,7 @@ fi
 
 until nc -z ${POSTGRES_HOST} ${POSTGRES_PORT}; do
   echo "$(date) - waiting for postgres..."
-  sleep 2
+  sleep 10
 done
 
 npm install
