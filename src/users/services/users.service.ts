@@ -30,7 +30,7 @@ export class UsersService {
 
   async findUsers({ search, start=0, limit=100 }: FindUsersQuery): Promise<ServiceResponse> {
     const query = {
-      search,
+      search: search.toLowerCase(),
       start,
       limit
     }; 
