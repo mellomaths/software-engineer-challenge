@@ -1,20 +1,14 @@
 import { Controller, Get, HttpStatus, Query, Res } from '@nestjs/common';
 import { Response } from 'express';
-import { UsersService } from '../services/users.service';
-
-export interface GetUsersQuery {
-  search: string;
-}
+import { FindUsersQuery, UsersService } from '../services/users.service';
 
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get()
-  async getUsers(@Query() query: GetUsersQuery, @Res() response: Response) {
-    const serviceResponse = await this.usersService.findUsersByKeyword(
-      query.search,
-    );
+  async getUsers(@Query() query: FindUsersQuery, @Res() response: Response) {
+    const serviceResponse = await this.usersService.findUsers(query);
     
     let statusCode: HttpStatus;
     if (serviceResponse.status === 400) {
