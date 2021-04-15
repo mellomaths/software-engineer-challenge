@@ -1,3 +1,5 @@
+import * as redisStore from 'cache-manager-redis-store';
+
 import { CacheModule, Module } from '@nestjs/common';
 import { UsersService } from './services/users.service';
 import { UsersController } from './controllers/users.controller';
@@ -9,6 +11,7 @@ import cacheConfig from 'src/config/cache.config';
 
 @Module({
   imports: [
+    CacheModule.register(),
     ConfigModule.forRoot({
       load: [cacheConfig],
     }),
