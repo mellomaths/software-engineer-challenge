@@ -20,7 +20,7 @@ export class UsersController {
       });
     }
 
-    if (serviceResponse.status !== 200) {
+    if (serviceResponse.status !== 200 && serviceResponse.status !== 206) {
       statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
       return response.status(statusCode).send({
         statusCode,
@@ -29,6 +29,9 @@ export class UsersController {
     }
 
     statusCode = HttpStatus.OK;
+    if (serviceResponse.status === 206) {
+      statusCode = HttpStatus.PARTIAL_CONTENT;
+    }
     return response.status(statusCode).send(serviceResponse.payload);
   }
 }
