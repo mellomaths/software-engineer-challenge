@@ -29,6 +29,6 @@ export class UsersController {
     }
 
     statusCode = HttpStatus.OK;
-    return response.status(statusCode).send(serviceResponse.payload.users);
+    return response.status(statusCode).send(serviceResponse.payload);
   }
 }
