@@ -35,15 +35,6 @@ export class UsersService {
       limit
     }; 
 
-    if (!query.search) {
-      return {
-        status: 400,
-        payload: {},
-        errors: [],
-        description: 'A search parameter is required for finding users.',
-      };
-    }
-
     const cacheKey = this.cacheKey.of.findUsers(query);
     let users: UserEntity[] = await this.cacheManager.get(cacheKey);
     if (users) {
@@ -55,6 +46,8 @@ export class UsersService {
         { fullname: Like(`%${query.search}%`) },
         { username: Like(`%${query.search}%`) },
       ],
+      take: limit,
+      skip: start,
     });
 
     users = users.sort((userA, userB) =>
@@ -62,6 +55,6 @@ export class UsersService {
     );
 
     this.cacheManager.set(cacheKey, users);
-    return { status: 200, payload: { users }, errors: [], description: 'OK' };
+    return { status: 200, payload: { pagination: { start, limit }, result: users }, errors: [], description: 'OK' };
   }
 }
