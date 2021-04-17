@@ -2,7 +2,7 @@ import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ServiceResponse } from 'src/utils/service.response';
-import { Like, Repository } from 'typeorm';
+import { FindManyOptions, Like, Repository } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
 
 export interface FindUsersQuery {
@@ -38,23 +38,28 @@ export class UsersService {
     const cacheKey = this.cacheKey.of.findUsers(query);
     let users: UserEntity[] = await this.cacheManager.get(cacheKey);
     if (users) {
-      return { status: 200, payload: { users }, errors: [], description: 'OK' }; 
+      return { status: 206, payload: { users }, errors: [], description: 'OK' }; 
     }
 
-    users = await this.usersRepository.find({
-      where: [
-        { fullname: Like(`%${query.search}%`) },
-        { username: Like(`%${query.search}%`) },
-      ],
+    const options: FindManyOptions = {
       take: limit,
       skip: start,
-    });
+    };
+
+    if (query.search) {
+      options.where = [
+        { fullname: Like(`%${query.search}%`) },
+        { username: Like(`%${query.search}%`) },
+      ];
+    }
+
+    users = await this.usersRepository.find(options);
 
     users = users.sort((userA, userB) =>
       userA.getPriorityNumber() > userB.getPriorityNumber() ? 1 : -1,
     );
 
     this.cacheManager.set(cacheKey, users);
-    return { status: 200, payload: { pagination: { start, limit }, result: users }, errors: [], description: 'OK' };
+    return { status: 206, payload: { pagination: { start, limit }, result: users }, errors: [], description: 'OK' };
   }
 }
