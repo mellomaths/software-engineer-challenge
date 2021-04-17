@@ -22,28 +22,34 @@ export class UsersService {
   private cacheKey = {
     of: {
       findUsers: (query: FindUsersQuery) => {
-        const search = query.search ? query.search : ''; 
-        return `findUsers.${search.replace(' ', '-')}.${query.start}.${query.limit}`;
-      }
-    }
+        const search = query.search ? query.search : '';
+        return `findUsers.${search.replace(' ', '-')}.${query.start}.${
+          query.limit
+        }`;
+      },
+    },
   };
 
-  async findUsers({ search='', start=0, limit=100 }: FindUsersQuery): Promise<ServiceResponse> {
+  async findUsers({
+    search = '',
+    start = 0,
+    limit = 100,
+  }: FindUsersQuery): Promise<ServiceResponse> {
     const query = {
       search: search.toLowerCase(),
-      start,
-      limit
-    }; 
+      start: parseInt(start.toString()),
+      limit: parseInt(limit.toString()),
+    };
 
     const cacheKey = this.cacheKey.of.findUsers(query);
     let users: UserEntity[] = await this.cacheManager.get(cacheKey);
     if (users) {
-      return { status: 206, payload: { users }, errors: [], description: 'OK' }; 
+      return { status: 206, payload: { users }, errors: [], description: 'OK' };
     }
 
     const options: FindManyOptions = {
-      take: limit,
-      skip: start,
+      take: query.limit,
+      skip: query.start,
     };
 
     if (query.search) {
@@ -60,6 +66,14 @@ export class UsersService {
     );
 
     this.cacheManager.set(cacheKey, users);
-    return { status: 206, payload: { pagination: { start, limit }, result: users }, errors: [], description: 'OK' };
+    return {
+      status: 206,
+      payload: {
+        pagination: { start: query.start, limit: query.limit },
+        result: users,
+      },
+      errors: [],
+      description: 'OK',
+    };
   }
 }
