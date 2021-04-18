@@ -59,7 +59,7 @@ export class UsersService {
           result: users,
         },
         errors: [],
-        description: 'OK',
+        description: 'Cached.',
       };
     }
 
@@ -104,7 +104,7 @@ export class UsersService {
         result: users,
       },
       errors: [],
-      description: 'OK',
+      description: 'OK.',
     };
   }
 }
