@@ -3,7 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import * as helmet from "helmet";
 
 import { AppModule } from './app.module';
-import { logger } from './middlewares/logger.middleware';
+import { logger } from './infrastructure/middlewares/logger.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
