@@ -2,9 +2,9 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { mockedBcryptService } from '../../../test/mocks/bcrypt.service';
-import { mockedConfigService } from '../../../test/mocks/config.service';
-import { mockedJwtService } from '../../../test/mocks/jwt.service';
+import { mockedBcryptService } from '../../../../test/mocks/bcrypt.service';
+import { mockedConfigService } from '../../../../test/mocks/config.service';
+import { mockedJwtService } from '../../../../test/mocks/jwt.service';
 import { ClientEntity } from '../entities/client.entity';
 
 import { AuthService } from './auth.service';

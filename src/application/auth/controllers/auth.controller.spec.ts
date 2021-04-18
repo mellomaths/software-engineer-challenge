@@ -1,9 +1,9 @@
-import { ConfigService } from '@nestjs/config';
+wimport { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { mockedJwtService } from '../../../test/mocks/jwt.service';
-import { mockedConfigService } from '../../../test/mocks/config.service';
+import { mockedJwtService } from '../../../../test/mocks/jwt.service';
+import { mockedConfigService } from '../../../../test/mocks/config.service';
 
 import { ClientEntity } from '../entities/client.entity';
 import { AuthService } from '../services/auth.service';

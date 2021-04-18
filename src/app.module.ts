@@ -1,14 +1,12 @@
-import * as redisStore from 'cache-manager-redis-store';
-
-import { CacheModule, Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { AuthModule } from './auth/auth.module';
-import { ClientEntity } from './auth/entities/client.entity';
-import { UserPriorityEntity } from './users/entities/user-priority.entity';
-import { UserEntity } from './users/entities/user.entity';
-import { UsersModule } from './users/users.module';
+import { AuthModule } from './application/auth/auth.module';
+import { ClientEntity } from './application/auth/entities/client.entity';
+import { UserPriorityEntity } from './application/users/entities/user-priority.entity';
+import { UserEntity } from './application/users/entities/user.entity';
+import { UsersModule } from './application/users/users.module';
 import { RedisModule } from './infrastructure/redis/redis.module';
 
 @Module({
