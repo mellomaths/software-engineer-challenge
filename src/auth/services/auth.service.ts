@@ -1,20 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { IdentityService } from './identity.service';
 
 @Injectable()
 export class AuthService {
+
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly identityService: IdentityService,
     private readonly jwtService: JwtService,
   ) {}
 
   async validate(username: string, attempt: string): Promise<any> {
+    this.logger.log(`Validating login for client (username=${username}).`);
     const serviceResponse = await this.identityService.checkLoginAttempt(username, attempt);
     if (serviceResponse.status === 200) {
+      this.logger.log(`Client successfully logged in (username=${username}).`);
       return serviceResponse.payload.client;
     }
 
+    this.logger.log(`Login failed (username=${username}).`);
     return null;
   }
 
