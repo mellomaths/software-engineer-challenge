@@ -31,6 +31,7 @@ export class AuthService {
       sub: client.id
     };
 
+    this.logger.log(`login:: Generating JWT for Client (username=${client.username})`);
     return { access_token: this.jwtService.sign(payload) };
   }
 
