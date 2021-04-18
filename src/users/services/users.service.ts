@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ServiceResponse } from 'src/utils/service.response';
 import { FindManyOptions, Like, Repository } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
+import { RedisService } from 'src/infrastructure/redis/services/redis/redis.service';
 
 export interface FindUsersQuery {
   search: string;
@@ -19,7 +20,7 @@ export class UsersService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly usersRepository: Repository<UserEntity>,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private readonly cacheManager: RedisService,
   ) {}
 
   private cacheKey = {
@@ -52,7 +53,15 @@ export class UsersService {
     if (users) {
       this.logger.log(`findUsers:: Cache hit.`);
       this.logger.log(`findUsers:: Users found using cache.`);
-      return { status: 206, payload: { users }, errors: [], description: 'OK' };
+      return {
+        status: 206,
+        payload: {
+          pagination: { start: query.start, limit: query.limit },
+          result: users,
+        },
+        errors: [],
+        description: 'OK',
+      };
     }
 
     this.logger.log(`findUsers:: Users searched was not found at cache, searching now the database.`);
