@@ -1,5 +1,4 @@
-import { CACHE_MANAGER, Inject, Injectable, Logger } from '@nestjs/common';
-import { Cache } from 'cache-manager';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ServiceResponse } from 'src/utils/service.response';
 import { FindManyOptions, Like, Repository } from 'typeorm';
