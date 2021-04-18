@@ -9,6 +9,7 @@ import { ClientEntity } from './auth/entities/client.entity';
 import { UserPriorityEntity } from './users/entities/user-priority.entity';
 import { UserEntity } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
+import { RedisModule } from './infrastructure/redis/redis.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { UsersModule } from './users/users.module';
     }),
     AuthModule,
     UsersModule,
+    RedisModule,
   ],
   controllers: [],
   providers: [],
