@@ -90,9 +90,9 @@ describe('UsersService', () => {
     it('should find all users from database without searching by a keyword', async () => {
       get.mockReturnValue(null);
       const serviceResponse = await service.findUsers();
-      expect(serviceResponse.status).toEqual(206);
+      expect(serviceResponse.status).toEqual(200);
       expect(serviceResponse.errors.length).toEqual(0);
-      expect(serviceResponse.description).toEqual('OK');
+      expect(serviceResponse.description).toEqual('OK.');
       expect(serviceResponse.payload).toBeDefined();
       expect(serviceResponse.payload.pagination).toBeDefined();
       expect(serviceResponse.payload.pagination.start).toEqual(0);
@@ -116,9 +116,9 @@ describe('UsersService', () => {
       get.mockReturnValue(null);
       const query = { search: 'dev' };
       const serviceResponse = await service.findUsers(query);
-      expect(serviceResponse.status).toEqual(206);
+      expect(serviceResponse.status).toEqual(200);
       expect(serviceResponse.errors.length).toEqual(0);
-      expect(serviceResponse.description).toEqual('OK');
+      expect(serviceResponse.description).toEqual('OK.');
       expect(serviceResponse.payload).toBeDefined();
       expect(serviceResponse.payload.pagination).toBeDefined();
       expect(serviceResponse.payload.pagination.start).toEqual(0);
@@ -151,9 +151,9 @@ describe('UsersService', () => {
       queryBuilder.getMany.mockReturnValue(users.slice(query.start, query.limit + query.start));
       get.mockReturnValue(null);
       const serviceResponse = await service.findUsers(query);
-      expect(serviceResponse.status).toEqual(206);
+      expect(serviceResponse.status).toEqual(200);
       expect(serviceResponse.errors.length).toEqual(0);
-      expect(serviceResponse.description).toEqual('OK');
+      expect(serviceResponse.description).toEqual('OK.');
       expect(serviceResponse.payload).toBeDefined();
       expect(serviceResponse.payload.pagination).toBeDefined();
       expect(serviceResponse.payload.pagination.start).toEqual(query.start);
