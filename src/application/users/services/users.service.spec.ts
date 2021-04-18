@@ -57,31 +57,31 @@ describe('UsersService', () => {
   });
 
   describe('findUsers', () => {
-    let users: UserEntity[];
+    let users: UserEntity[] = [];
     let usersCount: number;
     let devUsers: number;
+    const randomUsers = 20;
+    // Pushing a priority 2 before priority 1 to test sorting logic
+    users.push(createUser('Software Engineer', 'dev.software.engineer', 2));
+    users.push(createUser('Data Scientist', 'dev.data.scientist', 2));
+    users.push(createUser('Solution Architect', 'dev.solution.architect', 1));
+    users.push(createUser('Support Analyst', 'dev.support.analyst', 2));
+    users.push(createUser('Quality Assurance Analyst', 'dev.quality.assurance.analyst', 1));
+    // Create first the dev users to test the response searching by keyword
+    devUsers = users.length;
+    for (let i = 0; i < randomUsers; i++) {
+      users.push(createUser(
+        getRandomUserFullname(), 
+        getRandomUserUsername(), 
+        getRandomIntInclusive(1, 3)
+      ));
+    }
+
+    usersCount = users.length;
 
     beforeEach(() => {
-      const randomUsers = 20;
-      users = [];
-      // Pushing a priority 2 before priority 1 to test sorting logic
-      users.push(createUser('Software Engineer', 'dev.software.engineer', 2));
-      users.push(createUser('Data Scientist', 'dev.data.scientist', 2));
-      users.push(createUser('Solution Architect', 'dev.solution.architect', 2));
-      users.push(createUser('Support Analyst', 'dev.support.analyst', 1));
-      users.push(createUser('Quality Assurance Analyst', 'dev.quality.assurance.analyst', 1));
-      // Create first the dev users to test the response searching by keyword
-      devUsers = users.length;
-      for (let i = 0; i < randomUsers; i++) {
-        users.push(createUser(
-          getRandomUserFullname(), 
-          getRandomUserUsername(), 
-          getRandomIntInclusive(1, 3)
-        ));
-      }
-  
-      usersCount = users.length;
-      queryBuilder.getMany.mockReturnValue(users);
+      // Making a copy of users generated collection
+      queryBuilder.getMany.mockReturnValue(users.slice());
       queryBuilder.where.mockReset();
       set.mockReturnValue(null);
     });
