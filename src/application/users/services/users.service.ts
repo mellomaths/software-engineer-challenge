@@ -53,7 +53,7 @@ export class UsersService {
       this.logger.log(`findUsers:: Cache hit.`);
       this.logger.log(`findUsers:: Users found using cache.`);
       return {
-        status: 206,
+        status: 200,
         payload: {
           pagination: { start: params.start, limit: params.limit, count: users.length },
           result: users,
@@ -98,7 +98,7 @@ export class UsersService {
     this.cacheManager.set(cacheKey, users);
     this.logger.log(`findUsers:: Returning users partial content from the database.`);
     return {
-      status: 206,
+      status: 200,
       payload: {
         pagination: { start: params.start, limit: params.limit, count: users.length },
         result: users,
