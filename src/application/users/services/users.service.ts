@@ -6,9 +6,9 @@ import { UserEntity } from '../entities/user.entity';
 import { RedisService } from '../../../infrastructure/redis/services/redis/redis.service';
 
 export interface FindUsersQuery {
-  search: string;
-  limit: number;
-  start: number;
+  search?: string;
+  limit?: number;
+  start?: number;
 }
 
 @Injectable()
@@ -37,7 +37,7 @@ export class UsersService {
     search = '',
     start = 0,
     limit = 100,
-  }: FindUsersQuery): Promise<ServiceResponse> {
+  }: FindUsersQuery = {}): Promise<ServiceResponse> {
     const query = {
       search: search.toLowerCase(),
       start: parseInt(start.toString()),
