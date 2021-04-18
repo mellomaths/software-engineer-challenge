@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ServiceResponse } from 'src/utils/service.response';
 import { FindManyOptions, Like, Repository } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
-import { RedisService } from 'src/infrastructure/redis/services/redis/redis.service';
+import { RedisService } from '../../../infrastructure/redis/services/redis/redis.service';
 
 export interface FindUsersQuery {
   search: string;
