@@ -59,27 +59,28 @@ describe('UsersService', () => {
   describe('findUsers', () => {
     let users: UserEntity[];
     let usersCount: number;
+    let devUsers: number;
 
     beforeEach(() => {
-      usersCount = 20;
+      const randomUsers = 20;
       users = [];
-      for (let i = 0; i < usersCount; i++) {
-        const user = new UserEntity();
-        user.id = String(i);
-        user.fullname = 'Test ' + new Date().getTime();
-        user.username = 'test' + new Date().getTime() + '@email.com';
-        user.priority = null;
-        const priority = getRandomIntInclusive(1, 3);
-        if (priority < 3) {
-          user.priority = new UserPriorityEntity();
-          user.priority.user_id = String(i);
-          user.priority.priority_num = priority;
-        }
-        users.push(user);
+      // Pushing a priority 2 before priority 1 to test sorting logic
+      users.push(createUser('Software Engineer', 'dev.software.engineer', 2));
+      users.push(createUser('Data Scientist', 'dev.data.scientist', 2));
+      users.push(createUser('Solution Architect', 'dev.solution.architect', 2));
+      users.push(createUser('Support Analyst', 'dev.support.analyst', 1));
+      users.push(createUser('Quality Assurance Analyst', 'dev.quality.assurance.analyst', 1));
+      // Create first the dev users to test the response searching by keyword
+      devUsers = users.length;
+      for (let i = 0; i < randomUsers; i++) {
+        users.push(createUser(
+          getRandomUserFullname(), 
+          getRandomUserUsername(), 
+          getRandomIntInclusive(1, 3)
+        ));
       }
-
-      users = insertStaticUsers(users, 2);
-      usersCount += 2;
+  
+      usersCount = users.length;
       queryBuilder.getMany.mockReturnValue(users);
       set.mockReturnValue(null);
     });
@@ -100,11 +101,16 @@ describe('UsersService', () => {
       
       const usersFound = serviceResponse.payload.result;
       expect(usersFound[0].priority).toBeDefined();
-      expect(usersFound[0].priority).toBeDefined();
+      expect(usersFound[0].priority.priority_num).toEqual(1);
+      expect(usersFound[usersCount-1].priority).toBeNull();
+
+      // Expect to not use the where clause so that it brings any value
+      expect(queryBuilder.where).not.toHaveBeenCalled();
     });
 
     it('should find users by searching a keyword', async () => {
-      queryBuilder.getMany.mockReturnValue(users.slice(0, 2));
+      // Returning the first static users inserted
+      queryBuilder.getMany.mockReturnValue(users.slice(0, devUsers));
       get.mockReturnValue(null);
       const query = { search: 'dev' };
       const serviceResponse = await service.findUsers(query);
@@ -115,9 +121,21 @@ describe('UsersService', () => {
       expect(serviceResponse.payload.pagination).toBeDefined();
       expect(serviceResponse.payload.pagination.start).toEqual(0);
       expect(serviceResponse.payload.pagination.limit).toEqual(100);
-      expect(serviceResponse.payload.pagination.count).toEqual(2);
+      expect(serviceResponse.payload.pagination.count).toEqual(5);
       expect(serviceResponse.payload.result).toBeDefined();
-      expect(serviceResponse.payload.result.length).toEqual(2);
+      expect(serviceResponse.payload.result.length).toEqual(5);
+
+      const usersFound = serviceResponse.payload.result;
+      expect(usersFound[0].username).toContain('dev');
+      expect(usersFound[1].username).toContain('dev');
+
+      expect(usersFound[0].priority).toBeDefined();
+      expect(usersFound[0].priority.priority_num).toEqual(1);
+      expect(usersFound[devUsers-1].priority).toBeDefined();
+      expect(usersFound[devUsers-1].priority.priority_num).toEqual(2);
+
+      // Expect to use the where clause to search for the keyword
+      expect(queryBuilder.where).toHaveBeenCalled();
     });
   });
 
@@ -130,22 +148,24 @@ function getRandomIntInclusive(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function insertStaticUsers(users: UserEntity[], howMany: number): UserEntity[] {
-  const user1 = new UserEntity();
-  user1.id = getRandomIntInclusive(10000, 100000);
-  user1.fullname = 'Dev Software Engineer';
-  user1.username = 'dev.software.engineer';
-  user1.priority = new UserPriorityEntity();
-  user1.priority.priority_num = 1;
-  user1.priority.user_id = user1.id;
-  users.push(user1);
-  const user2 = new UserEntity();
-  user2.id = getRandomIntInclusive(10000, 100000);
-  user2.fullname = 'Dev Data Scientist';
-  user2.username = 'dev.data.scientist';
-  user2.priority = new UserPriorityEntity();
-  user2.priority.priority_num = 2;
-  user2.priority.user_id = user2.id;
-  users.push(user2);
-  return users;
+function getRandomUserFullname(): string {
+  return 'Test ' + new Date().getTime();
+}
+
+function getRandomUserUsername(): string {
+  return 'test' + new Date().getTime() + '@email.com';
+}
+
+function createUser(fullname: string, username: string, priority: number): UserEntity {
+  const user = new UserEntity();
+  user.id = getRandomIntInclusive(1000, 1000000);
+  user.fullname = fullname;
+  user.username = username;
+  user.priority = null;
+  if (priority < 3) {
+    user.priority = new UserPriorityEntity();
+    user.priority.user_id = user.id;
+    user.priority.priority_num = priority;
+  }
+  return user;
 }
