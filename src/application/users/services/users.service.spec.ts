@@ -14,12 +14,26 @@ function getRandomIntInclusive(min, max) {
 describe('UsersService', () => {
   let service: UsersService;
 
-  let find: jest.Mock;
+  let createQueryBuilder: jest.Mock;
+  let queryBuilder = {
+    leftJoinAndSelect: jest.fn(),
+    orderBy: jest.fn(),
+    take: jest.fn(),
+    skip: jest.fn(),
+    where: jest.fn(),
+    getMany: jest.fn(),
+  };
   let get: jest.Mock;
   let set: jest.Mock;
 
   beforeEach(async () => {
-    find = jest.fn();
+    createQueryBuilder = jest.fn();
+    createQueryBuilder.mockReturnValue(queryBuilder);
+    queryBuilder.leftJoinAndSelect.mockReturnValue(queryBuilder);
+    queryBuilder.orderBy.mockReturnValue(queryBuilder);
+    queryBuilder.take.mockReturnValue(queryBuilder);
+    queryBuilder.skip.mockReturnValue(queryBuilder);
+    queryBuilder.where.mockReturnValue(queryBuilder);
     get = jest.fn();
     set = jest.fn();
     const module: TestingModule = await Test.createTestingModule({
@@ -28,13 +42,7 @@ describe('UsersService', () => {
         {
           provide: getRepositoryToken(UserEntity),
           useValue: {
-            find,
-          },
-        },
-        {
-          provide: getRepositoryToken(UserPriorityEntity),
-          useValue: {
-            find,
+            createQueryBuilder,
           },
         },
         {
@@ -76,13 +84,29 @@ describe('UsersService', () => {
         users.push(user);
       }
       
-      find.mockReturnValue(users);
+      queryBuilder.getMany.mockReturnValue(users);
       set.mockReturnValue(null);
     });
 
     it('should find all users from database without searching by a keyword', async () => {
       get.mockReturnValue(null);
-      const query = { search: '', start: 0, limit: usersCount+1 };
+      const serviceResponse = await service.findUsers();
+      expect(serviceResponse.status).toEqual(206);
+      expect(serviceResponse.errors.length).toEqual(0);
+      expect(serviceResponse.description).toEqual('OK');
+      expect(serviceResponse.payload).toBeDefined();
+      expect(serviceResponse.payload.pagination).toBeDefined();
+      expect(serviceResponse.payload.pagination.start).toEqual(0);
+      expect(serviceResponse.payload.pagination.limit).toEqual(100);
+      expect(serviceResponse.payload.pagination.count).toEqual(usersCount);
+      expect(serviceResponse.payload.result).toBeDefined();
+      expect(serviceResponse.payload.result.length).toEqual(usersCount);
+    });
+
+    it('should find users by searching a keyword', async () => {
+      queryBuilder.getMany.mockReturnValue(users.slice(0, 2));
+      get.mockReturnValue(null);
+      const query = { search: 'test', start: 0, limit: 2 };
       const serviceResponse = await service.findUsers(query);
       expect(serviceResponse.status).toEqual(206);
       expect(serviceResponse.errors.length).toEqual(0);
@@ -91,9 +115,9 @@ describe('UsersService', () => {
       expect(serviceResponse.payload.pagination).toBeDefined();
       expect(serviceResponse.payload.pagination.start).toEqual(query.start);
       expect(serviceResponse.payload.pagination.limit).toEqual(query.limit);
-      expect(serviceResponse.payload.pagination.count).toEqual(usersCount);
+      expect(serviceResponse.payload.pagination.count).toEqual(query.limit);
       expect(serviceResponse.payload.result).toBeDefined();
-      expect(serviceResponse.payload.result.length).toEqual(usersCount);
+      expect(serviceResponse.payload.result.length).toEqual(query.limit);
     });
   });
 
