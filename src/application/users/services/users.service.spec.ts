@@ -63,10 +63,11 @@ describe('UsersService', () => {
     const randomUsers = 20;
     // Pushing a priority 2 before priority 1 to test sorting logic
     users.push(createUser('Software Engineer', 'dev.software.engineer', 2));
-    users.push(createUser('Data Scientist', 'dev.data.scientist', 2));
-    users.push(createUser('Solution Architect', 'dev.solution.architect', 1));
-    users.push(createUser('Support Analyst', 'dev.support.analyst', 2));
-    users.push(createUser('Quality Assurance Analyst', 'dev.quality.assurance.analyst', 1));
+    users.push(createUser('Data Scientist', 'dev.data.scientist', 1));
+    // Adding a user that does not a have a priority
+    users.push(createUser('Solution Architect', 'dev.solution.architect', 3));
+    users.push(createUser('Support Analyst', 'dev.support.analyst', 1));
+    users.push(createUser('Quality Assurance Analyst', 'dev.quality.assurance.analyst', 2));
     // Create first the dev users to test the response searching by keyword
     devUsers = users.length;
     for (let i = 0; i < randomUsers; i++) {
@@ -130,10 +131,16 @@ describe('UsersService', () => {
       expect(usersFound[0].username).toContain('dev');
       expect(usersFound[1].username).toContain('dev');
 
+      // First should have priority 1
       expect(usersFound[0].priority).toBeDefined();
       expect(usersFound[0].priority.priority_num).toEqual(1);
-      expect(usersFound[devUsers-1].priority).toBeDefined();
-      expect(usersFound[devUsers-1].priority.priority_num).toEqual(2);
+
+      // Second last should have a priority 2
+      expect(usersFound[devUsers-2].priority).toBeDefined();
+      expect(usersFound[devUsers-2].priority.priority_num).toEqual(2);
+
+      // Last should not have a priority defined
+      expect(usersFound[devUsers-1].priority).toBeNull();
 
       // Expect to use the where clause to search for the keyword
       expect(queryBuilder.where).toHaveBeenCalled();
