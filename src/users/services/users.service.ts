@@ -85,6 +85,9 @@ export class UsersService {
 
     this.logger.log(`findUsers:: Sorting the users by priority.`);
     users = users.sort((userA, userB) =>
+      // Ascending order
+      // if the user doesn't have a priority number
+      //  the getPriorityNumber() method returns INFINITY
       userA.getPriorityNumber() > userB.getPriorityNumber() ? 1 : -1,
     );
 
