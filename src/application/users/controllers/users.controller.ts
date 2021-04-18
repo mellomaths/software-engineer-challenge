@@ -1,7 +1,7 @@
 import { Controller, Get, HttpStatus, Query, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { JwtAuthGuard } from 'src/application/auth/guards/jwt-auth.guard';
-import { FindUsersQuery, UsersService } from '../services/users.service';
+import { FindUsersParams, UsersService } from '../services/users.service';
 
 @UseGuards(JwtAuthGuard)
 @Controller('users')
@@ -9,8 +9,8 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get()
-  async getUsers(@Query() query: FindUsersQuery, @Res() response: Response) {
-    const serviceResponse = await this.usersService.findUsers(query);
+  async getUsers(@Query() params: FindUsersParams, @Res() response: Response) {
+    const serviceResponse = await this.usersService.findUsers(params);
     
     let statusCode: HttpStatus;
     if (serviceResponse.status === 400) {

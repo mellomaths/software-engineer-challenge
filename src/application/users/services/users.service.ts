@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ServiceResponse } from 'src/utils/service.response';
-import { FindManyOptions, Like, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
 import { RedisService } from '../../../infrastructure/redis/services/redis/redis.service';
 
-export interface FindUsersQuery {
+export interface FindUsersParams {
   search?: string;
   limit?: number;
   start?: number;
@@ -24,10 +24,10 @@ export class UsersService {
 
   private cacheKey = {
     of: {
-      findUsers: (query: FindUsersQuery) => {
-        const search = query.search ? query.search : '';
-        return `findUsers.${search.replace(' ', '-')}.${query.start}.${
-          query.limit
+      findUsers: (params: FindUsersParams) => {
+        const search = params.search ? params.search : '';
+        return `findUsers.${search.replace(' ', '-')}.${params.start}.${
+          params.limit
         }`;
       },
     },
@@ -37,16 +37,16 @@ export class UsersService {
     search = '',
     start = 0,
     limit = 100,
-  }: FindUsersQuery = {}): Promise<ServiceResponse> {
-    const query = {
+  }: FindUsersParams = {}): Promise<ServiceResponse> {
+    const params = {
       search: search.toLowerCase(),
       start: parseInt(start.toString()),
       limit: parseInt(limit.toString()),
     };
-    this.logger.log(`findUsers:: Searching for users using parameters: ${JSON.stringify(query)}`);
+    this.logger.log(`findUsers:: Searching for users using parameters: ${JSON.stringify(params)}`);
     this.logger.log(`findUsers:: Checking if the payload is saved in cache.`);
 
-    const cacheKey = this.cacheKey.of.findUsers(query);
+    const cacheKey = this.cacheKey.of.findUsers(params);
     this.logger.log(`findUsers:: Cache Key: ${cacheKey}`);
     let users: UserEntity[] = await this.cacheManager.get(cacheKey);
     if (users) {
@@ -55,7 +55,7 @@ export class UsersService {
       return {
         status: 206,
         payload: {
-          pagination: { start: query.start, limit: query.limit, count: users.length },
+          pagination: { start: params.start, limit: params.limit, count: users.length },
           result: users,
         },
         errors: [],
@@ -65,21 +65,23 @@ export class UsersService {
 
     this.logger.log(`findUsers:: Users searched was not found at cache, searching now the database.`);
     this.logger.log(`findUsers:: Building query for the database.`);
-    const options: FindManyOptions = {
-      take: query.limit,
-      skip: query.start,
-    };
+    const query = this.usersRepository
+      .createQueryBuilder('users')
+      .leftJoinAndSelect('users.priority', 'priority')
+      .orderBy({
+        'priority.priority_num': 'ASC'
+      })
+      .take(params.limit)
+      .skip(params.start);
 
-    if (query.search) {
-      options.where = [
-        { fullname: Like(`%${query.search}%`) },
-        { username: Like(`%${query.search}%`) },
-      ];
+    if (params.search) {
+      query.where(
+        `users.fullname LIKE :fullname OR users.username LIKE :username`, 
+        { fullname: `%${params.search}%`, username: `%${params.search}%` }
+      );
     }
 
-    this.logger.log(`findUsers:: Query built: ${JSON.stringify(options)}`);
-
-    users = await this.usersRepository.find(options);
+    users = await query.getMany();
     this.logger.log(`findUsers:: Count of users returned from the database: ${users.length}.`);
 
     this.logger.log(`findUsers:: Sorting the users by priority.`);
@@ -98,7 +100,7 @@ export class UsersService {
     return {
       status: 206,
       payload: {
-        pagination: { start: query.start, limit: query.limit, count: users.length },
+        pagination: { start: params.start, limit: params.limit, count: users.length },
         result: users,
       },
       errors: [],
