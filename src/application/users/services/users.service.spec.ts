@@ -22,12 +22,12 @@ describe('UsersService', () => {
 
   beforeEach(async () => {
     createQueryBuilder = jest.fn();
-    createQueryBuilder.mockReturnValue(queryBuilder);
+    createQueryBuilder.mockReturnValueOnce(queryBuilder);
     queryBuilder.leftJoinAndSelect.mockReturnValue(queryBuilder);
     queryBuilder.orderBy.mockReturnValue(queryBuilder);
     queryBuilder.take.mockReturnValue(queryBuilder);
     queryBuilder.skip.mockReturnValue(queryBuilder);
-    queryBuilder.where.mockReturnValue(queryBuilder);
+    queryBuilder.where.mockReturnValueOnce(queryBuilder);
     get = jest.fn();
     set = jest.fn();
     const module: TestingModule = await Test.createTestingModule({
@@ -82,6 +82,7 @@ describe('UsersService', () => {
   
       usersCount = users.length;
       queryBuilder.getMany.mockReturnValue(users);
+      queryBuilder.where.mockReset();
       set.mockReturnValue(null);
     });
 
@@ -137,8 +138,31 @@ describe('UsersService', () => {
       // Expect to use the where clause to search for the keyword
       expect(queryBuilder.where).toHaveBeenCalled();
     });
-  });
 
+    it('should find users from database using pagination', async () => {
+      const query = { start: 5, limit: 5 };
+      queryBuilder.getMany.mockReturnValue(users.slice(query.start, query.limit + query.start));
+      get.mockReturnValue(null);
+      const serviceResponse = await service.findUsers(query);
+      expect(serviceResponse.status).toEqual(206);
+      expect(serviceResponse.errors.length).toEqual(0);
+      expect(serviceResponse.description).toEqual('OK');
+      expect(serviceResponse.payload).toBeDefined();
+      expect(serviceResponse.payload.pagination).toBeDefined();
+      expect(serviceResponse.payload.pagination.start).toEqual(query.start);
+      expect(serviceResponse.payload.pagination.limit).toEqual(query.limit);
+      expect(serviceResponse.payload.pagination.count).toEqual(query.limit);
+      expect(serviceResponse.payload.result).toBeDefined();
+      expect(serviceResponse.payload.result.length).toEqual(query.limit);
+      
+      const usersFound = serviceResponse.payload.result;
+      expect(usersFound[0].priority).toBeDefined();
+      expect(usersFound[0].priority.priority_num).toEqual(1);
+
+      // Expect to not use the where clause so that it brings any value
+      expect(queryBuilder.where).not.toHaveBeenCalled();
+    });
+  });
 });
 
 
