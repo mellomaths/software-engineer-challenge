@@ -10,7 +10,7 @@ import { IdentityService } from '../services/identity.service';
 export class AuthController {
 
   constructor(
-    private authService: AuthService,
+    private readonly authService: AuthService,
     private readonly identityService: IdentityService,
   ) {}
 

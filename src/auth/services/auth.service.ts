@@ -5,8 +5,8 @@ import { IdentityService } from './identity.service';
 @Injectable()
 export class AuthService {
   constructor(
-    private identityService: IdentityService,
-    private jwtService: JwtService,
+    private readonly identityService: IdentityService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async validate(username: string, attempt: string): Promise<any> {
