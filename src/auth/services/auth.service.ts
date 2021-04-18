@@ -13,14 +13,14 @@ export class AuthService {
   ) {}
 
   async validate(username: string, attempt: string): Promise<any> {
-    this.logger.log(`Validating login for client (username=${username}).`);
+    this.logger.log(`validate:: Validating login for client (username=${username}).`);
     const serviceResponse = await this.identityService.checkLoginAttempt(username, attempt);
     if (serviceResponse.status === 200) {
-      this.logger.log(`Client successfully logged in (username=${username}).`);
+      this.logger.log(`validate:: Client successfully logged in (username=${username}).`);
       return serviceResponse.payload.client;
     }
 
-    this.logger.log(`Login failed (username=${username}).`);
+    this.logger.log(`validate:: Login failed (username=${username}).`);
     return null;
   }
 
