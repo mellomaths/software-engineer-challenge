@@ -55,7 +55,7 @@ export class UsersService {
       return {
         status: 206,
         payload: {
-          pagination: { start: query.start, limit: query.limit },
+          pagination: { start: query.start, limit: query.limit, count: users.length },
           result: users,
         },
         errors: [],
@@ -98,7 +98,7 @@ export class UsersService {
     return {
       status: 206,
       payload: {
-        pagination: { start: query.start, limit: query.limit },
+        pagination: { start: query.start, limit: query.limit, count: users.length },
         result: users,
       },
       errors: [],
