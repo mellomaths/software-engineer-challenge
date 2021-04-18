@@ -2,12 +2,11 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { AuthModule } from './application/auth/auth.module';
 import { ClientEntity } from './application/auth/entities/client.entity';
 import { UserPriorityEntity } from './application/users/entities/user-priority.entity';
 import { UserEntity } from './application/users/entities/user.entity';
-import { UsersModule } from './application/users/users.module';
-import { RedisModule } from './infrastructure/redis/redis.module';
+import { ApplicationModule } from './application/application.module';
+import { InfrastructureModule } from './infrastructure/infrastructure.module';
 
 @Module({
   imports: [
@@ -22,9 +21,8 @@ import { RedisModule } from './infrastructure/redis/redis.module';
       entities: [ClientEntity, UserEntity, UserPriorityEntity],
       logging: true,
     }),
-    AuthModule,
-    UsersModule,
-    RedisModule,
+    ApplicationModule,
+    InfrastructureModule,
   ],
   controllers: [],
   providers: [],
