@@ -169,6 +169,21 @@ describe('UsersService', () => {
       // Expect to not use the where clause so that it brings any value
       expect(queryBuilder.where).not.toHaveBeenCalled();
     });
+    
+    it('should find users cached', async () => {
+      get.mockReturnValue(users.slice());
+      const serviceResponse = await service.findUsers();
+      expect(serviceResponse.status).toEqual(200);
+      expect(serviceResponse.errors.length).toEqual(0);
+      expect(serviceResponse.description).toEqual('Cached.');
+      expect(serviceResponse.payload).toBeDefined();
+      expect(serviceResponse.payload.pagination).toBeDefined();
+      expect(serviceResponse.payload.pagination.start).toEqual(0);
+      expect(serviceResponse.payload.pagination.limit).toEqual(100);
+      expect(serviceResponse.payload.pagination.count).toEqual(usersCount);
+      expect(serviceResponse.payload.result).toBeDefined();
+      expect(serviceResponse.payload.result.length).toEqual(usersCount);
+    });
   });
 });
 
