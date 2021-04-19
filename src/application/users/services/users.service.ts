@@ -77,21 +77,25 @@ export class UsersService {
 
     this.logger.log(`findUsers:: Users searched was not found at cache, searching now the database.`);
     this.logger.log(`findUsers:: Building query for the database.`);
-    const take: number = params.start > 0 ? params.limit : params.limit+1;
     const query = this.usersRepository
       .createQueryBuilder('users')
-      .leftJoinAndSelect('users.priority', 'priority')
+      .leftJoinAndSelect('users.priority', 'priority', "priority.user_id = users.id")
+      .take(params.limit)
+      .skip(params.start)
       .orderBy({
         'priority.priority_num': 'ASC'
-      })
-      .take(take)
-      .skip(params.start);
+      });
 
     if (params.search) {
-      query.where(
-        `users.fullname LIKE :fullname OR users.username LIKE :username`, 
-        { fullname: `%${params.search}%`, username: `%${params.search}%` }
-      );
+      query
+        .where(
+          `users.fullname LIKE :fullname`, 
+          { fullname: `%${params.search}%` }
+        )
+        .orWhere(
+          `users.username LIKE :username`, 
+          { username: `%${params.search}%` }
+        );
     }
 
     users = await query.getMany();
