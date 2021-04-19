@@ -59,6 +59,11 @@ docker-compose up
 ## Solução
 
 - Aplicação desenvolvida com [Nest.js](https://nestjs.com/).
+- Autenticação e Autorização com Passport: A API disponibiliza os endpoints 
+  - `POST /auth/identity` para criar um novo cliente da API.
+  - `POST /auth/login` para gerar um JWT que permitirá o cliente a acessar os outros endpoints da API.
+  - `GET /auth/profile` para obter o detalhamente de um cliente logado dado um JWT.
+- O Endpoint `GET /users` é disponibilizado com a obrigatoriedade do envio do query parameter `search`. Desta forma, o cliente da API consegue fazer uma busca por palavra chave. Por padrão, a API retornará o resultado de forma paginada com até 100 registros, porém é possível customizar essa paginação através dos parâmetros `start` e `limit`.
 - Banco de Dados utilizado: Postgres.
 - Cache: Foi utlizado Redis como banco de dados Chave-Valor como solução para Cache, desta forma conseguimos um tempo de resposta mais optimal nos endpoints da API.
 - Testes unitários com Jest: Foram realizados testes unitários com Jest principalmente em relação aos services definidos na aplicação.
