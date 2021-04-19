@@ -84,6 +84,7 @@ describe('UsersService', () => {
       // Making a copy of users generated collection
       queryBuilder.getMany.mockReturnValue(users.slice());
       queryBuilder.where.mockReset();
+      set.mockReset();
       set.mockReturnValue(null);
     });
 
@@ -185,6 +186,18 @@ describe('UsersService', () => {
       expect(serviceResponse.payload.result.length).toEqual(usersCount);
 
       expect(createQueryBuilder).not.toHaveBeenCalled();
+    });
+
+    it('should validate the search param not sent', async () => {
+      const serviceResponse = await service.findUsers();
+      expect(serviceResponse.status).toEqual(400);
+      expect(serviceResponse.errors.length).toEqual(0);
+      expect(serviceResponse.description).toEqual("The query parameter 'search' is required for this request. You should provide at least a keyword to search for.");
+      expect(serviceResponse.payload).toEqual({});
+      expect(serviceResponse.payload.result).toBeUndefined();
+
+      expect(createQueryBuilder).not.toHaveBeenCalled();
+      expect(get).not.toHaveBeenCalled();
     });
   });
 });
