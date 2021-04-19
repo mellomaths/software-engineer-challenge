@@ -69,7 +69,7 @@ docker-compose up
 - Testes unitários com Jest: Foram realizados testes unitários com Jest principalmente em relação aos services definidos na aplicação.
 - Testes de Integração com Postman/Newman: Foram criados com o Postman e o Newman como solução de CLI para executá-los. Para melhor visualização das requisições e dos testes, a collection criada está localizada em `test/users-ms.postman_collection.json` e pode ser importada. Detalhe: os testes E2E utilizando Jest não foram desenvolvidos, utilizamos apenas o Postman para esse cenário, logo eles devem ser ignorados e a execução deles deve falhar.
 - Integração Contínua: Foi utilizado Travis CI como solução de Integração Contínua, assim conseguimos executar todos os testes unitários a cada commit no Git. Após sucesso na execução dos testes, realiza-se o deploy da imagem Docker (Dockerfile.production) no Docker Hub.
-- Documentação da API REST com Open API (Swagger).
+- Documentação da API REST com Open API (Swagger): O arquivo `docs/openapi.yml` contém a documentação da API REST Users Finder.
 
 ## Banco de Dados
 
