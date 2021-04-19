@@ -39,7 +39,7 @@ export class UsersService {
     limit = 100,
   }: FindUsersParams = { search: '' }): Promise<ServiceResponse> {
     const params = {
-      search: search.toLowerCase(),
+      search: search,
       start: parseInt(start.toString()),
       limit: parseInt(limit.toString()),
     };
