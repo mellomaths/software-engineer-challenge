@@ -173,7 +173,7 @@
 					"response": []
 				},
 				{
-					"name": "400 /auth/login Bad Password",
+					"name": "401 /auth/login Bad Password",
 					"event": [
 						{
 							"listen": "test",
