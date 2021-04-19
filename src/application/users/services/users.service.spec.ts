@@ -15,6 +15,7 @@ describe('UsersService', () => {
     take: jest.fn(),
     skip: jest.fn(),
     where: jest.fn(),
+    orWhere: jest.fn(),
     getMany: jest.fn(),
   };
   let get: jest.Mock;
@@ -22,12 +23,13 @@ describe('UsersService', () => {
 
   beforeEach(async () => {
     createQueryBuilder = jest.fn();
-    createQueryBuilder.mockReturnValueOnce(queryBuilder);
+    createQueryBuilder.mockReturnValue(queryBuilder);
     queryBuilder.leftJoinAndSelect.mockReturnValue(queryBuilder);
     queryBuilder.orderBy.mockReturnValue(queryBuilder);
     queryBuilder.take.mockReturnValue(queryBuilder);
     queryBuilder.skip.mockReturnValue(queryBuilder);
-    queryBuilder.where.mockReturnValueOnce(queryBuilder);
+    queryBuilder.where.mockReturnValue(queryBuilder);
+    queryBuilder.orWhere.mockReturnValue(queryBuilder);
     get = jest.fn();
     set = jest.fn();
     const module: TestingModule = await Test.createTestingModule({
@@ -83,12 +85,13 @@ describe('UsersService', () => {
     beforeEach(() => {
       // Making a copy of users generated collection
       queryBuilder.getMany.mockReturnValue(users.slice());
-      queryBuilder.where.mockReset();
-      set.mockReset();
+      queryBuilder.where.mockClear();
+      queryBuilder.orWhere.mockClear();
+      set.mockClear();
       set.mockReturnValue(null);
     });
 
-    it('should find all users from database without searching by a keyword', async () => {
+    it('should find users from database without searching by a keyword', async () => {
       get.mockReturnValue(null);
       const serviceResponse = await service.findUsers({ search: 'test' });
       expect(serviceResponse.status).toEqual(200);
@@ -109,6 +112,7 @@ describe('UsersService', () => {
 
       // Expect to not use the where clause so that it brings any value
       expect(queryBuilder.where).toHaveBeenCalled();
+      expect(queryBuilder.orWhere).toHaveBeenCalled();
     });
 
     it('should find users by searching a keyword', async () => {
@@ -145,6 +149,7 @@ describe('UsersService', () => {
 
       // Expect to use the where clause to search for the keyword
       expect(queryBuilder.where).toHaveBeenCalled();
+      expect(queryBuilder.orWhere).toHaveBeenCalled();
     });
 
     it('should find users from database using pagination', async () => {
@@ -169,6 +174,7 @@ describe('UsersService', () => {
 
       // Expect to not use the where clause so that it brings any value
       expect(queryBuilder.where).toHaveBeenCalled();
+      expect(queryBuilder.orWhere).toHaveBeenCalled();
     });
     
     it('should find users cached', async () => {
@@ -197,6 +203,7 @@ describe('UsersService', () => {
       expect(serviceResponse.payload.result).toBeUndefined();
 
       expect(createQueryBuilder).not.toHaveBeenCalled();
+      expect(queryBuilder.orWhere).not.toHaveBeenCalled();
       expect(get).not.toHaveBeenCalled();
     });
   });
