@@ -89,7 +89,7 @@ describe('UsersService', () => {
 
     it('should find all users from database without searching by a keyword', async () => {
       get.mockReturnValue(null);
-      const serviceResponse = await service.findUsers();
+      const serviceResponse = await service.findUsers({ search: 'test' });
       expect(serviceResponse.status).toEqual(200);
       expect(serviceResponse.errors.length).toEqual(0);
       expect(serviceResponse.description).toEqual('OK.');
@@ -107,7 +107,7 @@ describe('UsersService', () => {
       expect(usersFound[usersCount-1].priority).toBeNull();
 
       // Expect to not use the where clause so that it brings any value
-      expect(queryBuilder.where).not.toHaveBeenCalled();
+      expect(queryBuilder.where).toHaveBeenCalled();
     });
 
     it('should find users by searching a keyword', async () => {
@@ -147,7 +147,7 @@ describe('UsersService', () => {
     });
 
     it('should find users from database using pagination', async () => {
-      const query = { start: 5, limit: 5 };
+      const query = { search: 'test', start: 5, limit: 5 };
       queryBuilder.getMany.mockReturnValue(users.slice(query.start, query.limit + query.start));
       get.mockReturnValue(null);
       const serviceResponse = await service.findUsers(query);
@@ -167,12 +167,12 @@ describe('UsersService', () => {
       expect(usersFound[0].priority.priority_num).toEqual(1);
 
       // Expect to not use the where clause so that it brings any value
-      expect(queryBuilder.where).not.toHaveBeenCalled();
+      expect(queryBuilder.where).toHaveBeenCalled();
     });
     
     it('should find users cached', async () => {
       get.mockReturnValue(users.slice());
-      const serviceResponse = await service.findUsers();
+      const serviceResponse = await service.findUsers({ search: 'test' });
       expect(serviceResponse.status).toEqual(200);
       expect(serviceResponse.errors.length).toEqual(0);
       expect(serviceResponse.description).toEqual('Cached.');
@@ -183,6 +183,8 @@ describe('UsersService', () => {
       expect(serviceResponse.payload.pagination.count).toEqual(usersCount);
       expect(serviceResponse.payload.result).toBeDefined();
       expect(serviceResponse.payload.result.length).toEqual(usersCount);
+
+      expect(createQueryBuilder).not.toHaveBeenCalled();
     });
   });
 });
