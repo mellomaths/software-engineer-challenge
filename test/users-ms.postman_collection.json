@@ -20,7 +20,7 @@
 									"    pm.response.to.have.status(statusCodeExpected);",
 									"});",
 									"",
-									"var schema = {",
+									"const schema = {",
 									"    \"type\": \"object\",",
 									"    \"required\": [\"id\"],",
 									"    \"properties\": {",
@@ -78,6 +78,189 @@
 					"response": []
 				},
 				{
+					"name": "401 /auth/identity User already registered",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const statusCodeExpected = 422;",
+									"pm.test(\"Status code should be equal to \" + statusCodeExpected, function () {",
+									"    pm.response.to.have.status(statusCodeExpected);",
+									"});",
+									"",
+									"const schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"statusCode\", \"message\"],",
+									"    \"properties\": {",
+									"        \"statusCode\": {",
+									"            \"type\": \"number\"",
+									"        },",
+									"        \"message\": {",
+									"            \"type\": \"string\"",
+									"        },",
+									"        \"errors\": {",
+									"            \"type\": \"array\",",
+									"            \"items\": {",
+									"                \"type\": \"object\",",
+									"                \"required\": [\"code\", \"field\", \"message\"],",
+									"                \"properties\": {",
+									"                    \"code\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"field\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"message\": {",
+									"                        \"type\": \"string\"",
+									"                    }",
+									"                }",
+									"            }",
+									"        }",
+									"    }",
+									"};",
+									"",
+									"pm.test('Response body should be validated by the JSON Schema', function () {",
+									"    pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
+									"});",
+									"",
+									"const messageExpected = \"Server was not able to register this client.\";",
+									"pm.test('Message on request body should be ' + messageExpected, function () {",
+									"    pm.expect(pm.response.json().message).to.be.equal(messageExpected);",
+									"});",
+									"",
+									"pm.test('Status Code on request body should be ' + statusCodeExpected, function () {",
+									"    pm.expect(pm.response.json().statusCode).to.be.equal(statusCodeExpected);",
+									"});",
+									"",
+									"pm.test('Error reason should be defined', function () {",
+									"    const errors = pm.response.json().errors;",
+									"    pm.expect(errors.length).to.be.greaterThan(0);",
+									"    pm.expect(errors[0].code).to.be.equal('CONFLICT');",
+									"    pm.expect(errors[0].field).to.be.equal('username');",
+									"    pm.expect(errors[0].message).to.be.equal('Username registered.');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{username}}\",\n    \"password\": \"12345678\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/identity",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"identity"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "400 /auth/login Bad Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const statusCodeExpected = 401;",
+									"pm.test(\"Status code should be equal to \" + statusCodeExpected, function () {",
+									"    pm.response.to.have.status(statusCodeExpected);",
+									"});",
+									"",
+									"const schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"statusCode\", \"message\"],",
+									"    \"properties\": {",
+									"        \"statusCode\": {",
+									"            \"type\": \"number\"",
+									"        },",
+									"        \"message\": {",
+									"            \"type\": \"string\"",
+									"        },",
+									"        \"errors\": {",
+									"            \"type\": \"array\",",
+									"            \"items\": {",
+									"                \"type\": \"object\",",
+									"                \"required\": [\"code\", \"field\", \"message\"],",
+									"                \"properties\": {",
+									"                    \"code\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"field\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"message\": {",
+									"                        \"type\": \"string\"",
+									"                    }",
+									"                }",
+									"            }",
+									"        }",
+									"    }",
+									"};",
+									"",
+									"pm.test('Response body should be validated by the JSON Schema', function () {",
+									"    pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
+									"});",
+									"",
+									"const messageExpected = \"Unauthorized\";",
+									"pm.test('Message on request body should be ' + messageExpected, function () {",
+									"    pm.expect(pm.response.json().message).to.be.equal(messageExpected);",
+									"});",
+									"",
+									"pm.test('Status Code on request body should be ' + statusCodeExpected, function () {",
+									"    pm.expect(pm.response.json().statusCode).to.be.equal(statusCodeExpected);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{username}}\",\n    \"password\": \"1234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "201 /auth/login",
 					"event": [
 						{
@@ -89,7 +272,7 @@
 									"    pm.response.to.have.status(statusCodeExpected);",
 									"});",
 									"",
-									"var schema = {",
+									"const schema = {",
 									"    \"type\": \"object\",",
 									"    \"required\": [\"access_token\"],",
 									"    \"properties\": {",
@@ -219,7 +402,7 @@
 									"    pm.response.to.have.status(statusCodeExpected);",
 									"});",
 									"",
-									"var schema = {",
+									"const schema = {",
 									"    \"type\": \"object\",",
 									"    \"required\": [\"id\", \"createdAt\", \"lastUpdateAt\", \"username\"],",
 									"    \"properties\": {",
@@ -293,13 +476,108 @@
 			"name": "Users",
 			"item": [
 				{
-					"name": "200 /users?search",
+					"name": "200 /users?search=Diether User has a 1 Priority",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									""
+									"const statusCodeExpected = 200;",
+									"pm.test(\"Status code should be equal to \" + statusCodeExpected, function () {",
+									"    pm.response.to.have.status(statusCodeExpected);",
+									"});",
+									"",
+									"const schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"pagination\", \"result\"],",
+									"    \"properties\": {",
+									"        \"pagination\": {",
+									"            \"type\": \"object\",",
+									"            \"required\": [\"start\", \"limit\", \"count\"],",
+									"            \"properties\": {",
+									"                \"start\": {",
+									"                    \"type\": \"number\"",
+									"                },",
+									"                \"limit\": {",
+									"                    \"type\": \"number\"",
+									"                },",
+									"                \"count\": {",
+									"                    \"type\": \"number\"",
+									"                }",
+									"            }",
+									"        },",
+									"        \"result\": {",
+									"            \"type\": \"array\",",
+									"            \"items\": {",
+									"                \"type\": \"object\",",
+									"                \"required\": [\"id\", \"fullname\", \"username\", \"priority\"],",
+									"                \"properties\": {",
+									"                    \"id\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"fullname\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"username\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"priority\": {",
+									"                        \"oneOf\": [",
+									"                            { \"type\": \"null\" },",
+									"                            {",
+									"                                \"type\": \"object\",",
+									"                                \"required\": [\"user_id\", \"priority_num\"],",
+									"                                \"properties\": {",
+									"                                    \"user_id\": {",
+									"                                        \"type\": \"string\"",
+									"                                    },",
+									"                                    \"priority_num\": {",
+									"                                        \"type\": \"number\"",
+									"                                    }",
+									"                                }",
+									"                            }",
+									"                        ]",
+									"                    }",
+									"                }",
+									"            }",
+									"        }",
+									"    }",
+									"};",
+									"",
+									"pm.test('Response body should be validated by the JSON Schema', function () {",
+									"    pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
+									"});",
+									"",
+									"const paginationStartExpected = 0;",
+									"const paginationLimitExpected = 100;",
+									"pm.test(`Should return pagination start=${paginationStartExpected} and limit=${paginationLimitExpected}`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.pagination.start).to.eql(paginationStartExpected);",
+									"    pm.expect(jsonData.pagination.limit).to.eql(paginationLimitExpected);",
+									"});",
+									"",
+									"const userCountExpected = 100;",
+									"pm.test(`Should return ${userCountExpected} users.`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.pagination.count).to.eql(userCountExpected);",
+									"    pm.expect(jsonData.result.length).to.eql(userCountExpected);",
+									"});",
+									"",
+									"pm.test(`First user should have priority 1`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result[0].priority.priority_num).to.eql(1);",
+									"});",
+									"",
+									"pm.test(`Last user should not have a priority`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    const resultlength = jsonData.result.length;",
+									"    pm.expect(jsonData.result[resultlength - 1].priority).to.be.null;",
+									"});",
+									"",
+									"const responseTimeExpected = 1000;",
+									"pm.test(`Response time is less than ${responseTimeExpected}ms`, function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(responseTimeExpected);",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -319,7 +597,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/users?search=mellomaths",
+							"raw": "http://localhost:3000/users?search=Diether",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -331,8 +609,1070 @@
 							"query": [
 								{
 									"key": "search",
-									"value": "mellomaths"
+									"value": "Diether"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200 /users?search=Ruth User has a 2 Priority",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const statusCodeExpected = 200;",
+									"pm.test(\"Status code should be equal to \" + statusCodeExpected, function () {",
+									"    pm.response.to.have.status(statusCodeExpected);",
+									"});",
+									"",
+									"const schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"pagination\", \"result\"],",
+									"    \"properties\": {",
+									"        \"pagination\": {",
+									"            \"type\": \"object\",",
+									"            \"required\": [\"start\", \"limit\", \"count\"],",
+									"            \"properties\": {",
+									"                \"start\": {",
+									"                    \"type\": \"number\"",
+									"                },",
+									"                \"limit\": {",
+									"                    \"type\": \"number\"",
+									"                },",
+									"                \"count\": {",
+									"                    \"type\": \"number\"",
+									"                }",
+									"            }",
+									"        },",
+									"        \"result\": {",
+									"            \"type\": \"array\",",
+									"            \"items\": {",
+									"                \"type\": \"object\",",
+									"                \"required\": [\"id\", \"fullname\", \"username\", \"priority\"],",
+									"                \"properties\": {",
+									"                    \"id\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"fullname\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"username\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"priority\": {",
+									"                        \"oneOf\": [",
+									"                            { \"type\": \"null\" },",
+									"                            {",
+									"                                \"type\": \"object\",",
+									"                                \"required\": [\"user_id\", \"priority_num\"],",
+									"                                \"properties\": {",
+									"                                    \"user_id\": {",
+									"                                        \"type\": \"string\"",
+									"                                    },",
+									"                                    \"priority_num\": {",
+									"                                        \"type\": \"number\"",
+									"                                    }",
+									"                                }",
+									"                            }",
+									"                        ]",
+									"                    }",
+									"                }",
+									"            }",
+									"        }",
+									"    }",
+									"};",
+									"",
+									"pm.test('Response body should be validated by the JSON Schema', function () {",
+									"    pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
+									"});",
+									"",
+									"const paginationStartExpected = 0;",
+									"const paginationLimitExpected = 100;",
+									"pm.test(`Should return pagination start=${paginationStartExpected} and limit=${paginationLimitExpected}`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.pagination.start).to.eql(paginationStartExpected);",
+									"    pm.expect(jsonData.pagination.limit).to.eql(paginationLimitExpected);",
+									"});",
+									"",
+									"const userCountExpected = 100;",
+									"pm.test(`Should return ${userCountExpected} users.`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.pagination.count).to.eql(userCountExpected);",
+									"    pm.expect(jsonData.result.length).to.eql(userCountExpected);",
+									"});",
+									"",
+									"pm.test(`First user should have priority 2`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result[0].priority.priority_num).to.eql(2);",
+									"});",
+									"",
+									"pm.test(`Last user should not have a priority`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    const resultlength = jsonData.result.length;",
+									"    pm.expect(jsonData.result[resultlength - 1].priority).to.be.null;",
+									"});",
+									"",
+									"const responseTimeExpected = 1000;",
+									"pm.test(`Response time is less than ${responseTimeExpected}ms`, function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(responseTimeExpected);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/users?search=Ruth",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "Ruth"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200 /users?search After saving if in cache",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const statusCodeExpected = 200;",
+									"pm.test(\"Status code should be equal to \" + statusCodeExpected, function () {",
+									"    pm.response.to.have.status(statusCodeExpected);",
+									"});",
+									"",
+									"const schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"pagination\", \"result\"],",
+									"    \"properties\": {",
+									"        \"pagination\": {",
+									"            \"type\": \"object\",",
+									"            \"required\": [\"start\", \"limit\", \"count\"],",
+									"            \"properties\": {",
+									"                \"start\": {",
+									"                    \"type\": \"number\"",
+									"                },",
+									"                \"limit\": {",
+									"                    \"type\": \"number\"",
+									"                },",
+									"                \"count\": {",
+									"                    \"type\": \"number\"",
+									"                }",
+									"            }",
+									"        },",
+									"        \"result\": {",
+									"            \"type\": \"array\",",
+									"            \"items\": {",
+									"                \"type\": \"object\",",
+									"                \"required\": [\"id\", \"fullname\", \"username\", \"priority\"],",
+									"                \"properties\": {",
+									"                    \"id\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"fullname\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"username\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"priority\": {",
+									"                        \"oneOf\": [",
+									"                            { \"type\": \"null\" },",
+									"                            {",
+									"                                \"type\": \"object\",",
+									"                                \"required\": [\"user_id\", \"priority_num\"],",
+									"                                \"properties\": {",
+									"                                    \"user_id\": {",
+									"                                        \"type\": \"string\"",
+									"                                    },",
+									"                                    \"priority_num\": {",
+									"                                        \"type\": \"number\"",
+									"                                    }",
+									"                                }",
+									"                            }",
+									"                        ]",
+									"                    }",
+									"                }",
+									"            }",
+									"        }",
+									"    }",
+									"};",
+									"",
+									"pm.test('Response body should be validated by the JSON Schema', function () {",
+									"    pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
+									"});",
+									"",
+									"const paginationStartExpected = 0;",
+									"const paginationLimitExpected = 100;",
+									"pm.test(`Should return pagination start=${paginationStartExpected} and limit=${paginationLimitExpected}`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.pagination.start).to.eql(paginationStartExpected);",
+									"    pm.expect(jsonData.pagination.limit).to.eql(paginationLimitExpected);",
+									"});",
+									"",
+									"const userCountExpected = 100;",
+									"pm.test(`Should return ${userCountExpected} users.`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.pagination.count).to.eql(userCountExpected);",
+									"    pm.expect(jsonData.result.length).to.eql(userCountExpected);",
+									"});",
+									"",
+									"pm.test(`First user should have priority 1`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result[0].priority.priority_num).to.eql(1);",
+									"});",
+									"",
+									"pm.test(`Last user should not have a priority`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    const resultlength = jsonData.result.length;",
+									"    pm.expect(jsonData.result[resultlength - 1].priority).to.be.null;",
+									"});",
+									"",
+									"const responseTimeExpected = 10;",
+									"pm.test(`Cached response time is less than ${responseTimeExpected}ms`, function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(responseTimeExpected);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/users?search=Diether",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "Diether"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200 /users?search By Fullname",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const statusCodeExpected = 200;",
+									"pm.test(\"Status code should be equal to \" + statusCodeExpected, function () {",
+									"    pm.response.to.have.status(statusCodeExpected);",
+									"});",
+									"",
+									"const schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"pagination\", \"result\"],",
+									"    \"properties\": {",
+									"        \"pagination\": {",
+									"            \"type\": \"object\",",
+									"            \"required\": [\"start\", \"limit\", \"count\"],",
+									"            \"properties\": {",
+									"                \"start\": {",
+									"                    \"type\": \"number\"",
+									"                },",
+									"                \"limit\": {",
+									"                    \"type\": \"number\"",
+									"                },",
+									"                \"count\": {",
+									"                    \"type\": \"number\"",
+									"                }",
+									"            }",
+									"        },",
+									"        \"result\": {",
+									"            \"type\": \"array\",",
+									"            \"items\": {",
+									"                \"type\": \"object\",",
+									"                \"required\": [\"id\", \"fullname\", \"username\", \"priority\"],",
+									"                \"properties\": {",
+									"                    \"id\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"fullname\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"username\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"priority\": {",
+									"                        \"oneOf\": [",
+									"                            { \"type\": \"null\" },",
+									"                            {",
+									"                                \"type\": \"object\",",
+									"                                \"required\": [\"user_id\", \"priority_num\"],",
+									"                                \"properties\": {",
+									"                                    \"user_id\": {",
+									"                                        \"type\": \"string\"",
+									"                                    },",
+									"                                    \"priority_num\": {",
+									"                                        \"type\": \"number\"",
+									"                                    }",
+									"                                }",
+									"                            }",
+									"                        ]",
+									"                    }",
+									"                }",
+									"            }",
+									"        }",
+									"    }",
+									"};",
+									"",
+									"pm.test('Response body should be validated by the JSON Schema', function () {",
+									"    pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
+									"});",
+									"",
+									"const paginationStartExpected = 0;",
+									"const paginationLimitExpected = 100;",
+									"pm.test(`Should return pagination start=${paginationStartExpected} and limit=${paginationLimitExpected}`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.pagination.start).to.eql(paginationStartExpected);",
+									"    pm.expect(jsonData.pagination.limit).to.eql(paginationLimitExpected);",
+									"});",
+									"",
+									"const userCountExpected = 1;",
+									"pm.test(`Should return ${userCountExpected} users.`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.pagination.count).to.eql(userCountExpected);",
+									"    pm.expect(jsonData.result.length).to.eql(userCountExpected);",
+									"});",
+									"",
+									"const fullnameExpected = 'Heitor Rovaron';",
+									"const usernameExpected = 'heitor.rovaron';",
+									"pm.test(`User should have fullname=${fullnameExpected} and username=${usernameExpected}`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result[0].fullname).to.eql(fullnameExpected);",
+									"    pm.expect(jsonData.result[0].username).to.eql(usernameExpected);",
+									"});",
+									"",
+									"const responseTimeExpected = 1000;",
+									"pm.test(`Cached response time is less than ${responseTimeExpected}ms`, function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(responseTimeExpected);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/users?search=Heitor Rovaron",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "Heitor Rovaron"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200 /users?search By Username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const statusCodeExpected = 200;",
+									"pm.test(\"Status code should be equal to \" + statusCodeExpected, function () {",
+									"    pm.response.to.have.status(statusCodeExpected);",
+									"});",
+									"",
+									"const schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"pagination\", \"result\"],",
+									"    \"properties\": {",
+									"        \"pagination\": {",
+									"            \"type\": \"object\",",
+									"            \"required\": [\"start\", \"limit\", \"count\"],",
+									"            \"properties\": {",
+									"                \"start\": {",
+									"                    \"type\": \"number\"",
+									"                },",
+									"                \"limit\": {",
+									"                    \"type\": \"number\"",
+									"                },",
+									"                \"count\": {",
+									"                    \"type\": \"number\"",
+									"                }",
+									"            }",
+									"        },",
+									"        \"result\": {",
+									"            \"type\": \"array\",",
+									"            \"items\": {",
+									"                \"type\": \"object\",",
+									"                \"required\": [\"id\", \"fullname\", \"username\", \"priority\"],",
+									"                \"properties\": {",
+									"                    \"id\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"fullname\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"username\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"priority\": {",
+									"                        \"oneOf\": [",
+									"                            { \"type\": \"null\" },",
+									"                            {",
+									"                                \"type\": \"object\",",
+									"                                \"required\": [\"user_id\", \"priority_num\"],",
+									"                                \"properties\": {",
+									"                                    \"user_id\": {",
+									"                                        \"type\": \"string\"",
+									"                                    },",
+									"                                    \"priority_num\": {",
+									"                                        \"type\": \"number\"",
+									"                                    }",
+									"                                }",
+									"                            }",
+									"                        ]",
+									"                    }",
+									"                }",
+									"            }",
+									"        }",
+									"    }",
+									"};",
+									"",
+									"pm.test('Response body should be validated by the JSON Schema', function () {",
+									"    pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
+									"});",
+									"",
+									"const paginationStartExpected = 0;",
+									"const paginationLimitExpected = 100;",
+									"pm.test(`Should return pagination start=${paginationStartExpected} and limit=${paginationLimitExpected}`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.pagination.start).to.eql(paginationStartExpected);",
+									"    pm.expect(jsonData.pagination.limit).to.eql(paginationLimitExpected);",
+									"});",
+									"",
+									"const userCountExpected = 1;",
+									"pm.test(`Should return ${userCountExpected} users.`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.pagination.count).to.eql(userCountExpected);",
+									"    pm.expect(jsonData.result.length).to.eql(userCountExpected);",
+									"});",
+									"",
+									"const fullnameExpected = 'Melony Terci';",
+									"const usernameExpected = 'melony.terci';",
+									"pm.test(`User should have fullname=${fullnameExpected} and username=${usernameExpected}`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result[0].fullname).to.eql(fullnameExpected);",
+									"    pm.expect(jsonData.result[0].username).to.eql(usernameExpected);",
+									"});",
+									"",
+									"const responseTimeExpected = 1000;",
+									"pm.test(`Cached response time is less than ${responseTimeExpected}ms`, function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(responseTimeExpected);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/users?search=melony.terci",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "melony.terci"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200 /users?search&start",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const statusCodeExpected = 200;",
+									"pm.test(\"Status code should be equal to \" + statusCodeExpected, function () {",
+									"    pm.response.to.have.status(statusCodeExpected);",
+									"});",
+									"",
+									"const schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"pagination\", \"result\"],",
+									"    \"properties\": {",
+									"        \"pagination\": {",
+									"            \"type\": \"object\",",
+									"            \"required\": [\"start\", \"limit\", \"count\"],",
+									"            \"properties\": {",
+									"                \"start\": {",
+									"                    \"type\": \"number\"",
+									"                },",
+									"                \"limit\": {",
+									"                    \"type\": \"number\"",
+									"                },",
+									"                \"count\": {",
+									"                    \"type\": \"number\"",
+									"                }",
+									"            }",
+									"        },",
+									"        \"result\": {",
+									"            \"type\": \"array\",",
+									"            \"items\": {",
+									"                \"type\": \"object\",",
+									"                \"required\": [\"id\", \"fullname\", \"username\", \"priority\"],",
+									"                \"properties\": {",
+									"                    \"id\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"fullname\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"username\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"priority\": {",
+									"                        \"oneOf\": [",
+									"                            { \"type\": \"null\" },",
+									"                            {",
+									"                                \"type\": \"object\",",
+									"                                \"required\": [\"user_id\", \"priority_num\"],",
+									"                                \"properties\": {",
+									"                                    \"user_id\": {",
+									"                                        \"type\": \"string\"",
+									"                                    },",
+									"                                    \"priority_num\": {",
+									"                                        \"type\": \"number\"",
+									"                                    }",
+									"                                }",
+									"                            }",
+									"                        ]",
+									"                    }",
+									"                }",
+									"            }",
+									"        }",
+									"    }",
+									"};",
+									"",
+									"pm.test('Response body should be validated by the JSON Schema', function () {",
+									"    pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
+									"});",
+									"",
+									"const paginationStartExpected = 5;",
+									"const paginationLimitExpected = 100;",
+									"pm.test(`Should return pagination start=${paginationStartExpected} and limit=${paginationLimitExpected}`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.pagination.start).to.eql(paginationStartExpected);",
+									"    pm.expect(jsonData.pagination.limit).to.eql(paginationLimitExpected);",
+									"});",
+									"",
+									"const userCountExpected = 100;",
+									"pm.test(`Should return ${userCountExpected} users.`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.pagination.count).to.eql(userCountExpected);",
+									"    pm.expect(jsonData.result.length).to.eql(userCountExpected);",
+									"});",
+									"",
+									"const responseTimeExpected = 1000;",
+									"pm.test(`Response time is less than ${responseTimeExpected}ms`, function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(responseTimeExpected);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/users?search=Diether&start=5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "Diether"
+								},
+								{
+									"key": "start",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200 /users?search&limit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const statusCodeExpected = 200;",
+									"pm.test(\"Status code should be equal to \" + statusCodeExpected, function () {",
+									"    pm.response.to.have.status(statusCodeExpected);",
+									"});",
+									"",
+									"const schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"pagination\", \"result\"],",
+									"    \"properties\": {",
+									"        \"pagination\": {",
+									"            \"type\": \"object\",",
+									"            \"required\": [\"start\", \"limit\", \"count\"],",
+									"            \"properties\": {",
+									"                \"start\": {",
+									"                    \"type\": \"number\"",
+									"                },",
+									"                \"limit\": {",
+									"                    \"type\": \"number\"",
+									"                },",
+									"                \"count\": {",
+									"                    \"type\": \"number\"",
+									"                }",
+									"            }",
+									"        },",
+									"        \"result\": {",
+									"            \"type\": \"array\",",
+									"            \"items\": {",
+									"                \"type\": \"object\",",
+									"                \"required\": [\"id\", \"fullname\", \"username\", \"priority\"],",
+									"                \"properties\": {",
+									"                    \"id\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"fullname\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"username\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"priority\": {",
+									"                        \"oneOf\": [",
+									"                            { \"type\": \"null\" },",
+									"                            {",
+									"                                \"type\": \"object\",",
+									"                                \"required\": [\"user_id\", \"priority_num\"],",
+									"                                \"properties\": {",
+									"                                    \"user_id\": {",
+									"                                        \"type\": \"string\"",
+									"                                    },",
+									"                                    \"priority_num\": {",
+									"                                        \"type\": \"number\"",
+									"                                    }",
+									"                                }",
+									"                            }",
+									"                        ]",
+									"                    }",
+									"                }",
+									"            }",
+									"        }",
+									"    }",
+									"};",
+									"",
+									"pm.test('Response body should be validated by the JSON Schema', function () {",
+									"    pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
+									"});",
+									"",
+									"const paginationStartExpected = 0;",
+									"const paginationLimitExpected = 5;",
+									"pm.test(`Should return pagination start=${paginationStartExpected} and limit=${paginationLimitExpected}`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.pagination.start).to.eql(paginationStartExpected);",
+									"    pm.expect(jsonData.pagination.limit).to.eql(paginationLimitExpected);",
+									"});",
+									"",
+									"const userCountExpected = 5;",
+									"pm.test(`Should return ${userCountExpected} users.`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.pagination.count).to.eql(userCountExpected);",
+									"    pm.expect(jsonData.result.length).to.eql(userCountExpected);",
+									"});",
+									"",
+									"pm.test(`First user should have priority 1`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result[0].priority.priority_num).to.eql(1);",
+									"});",
+									"",
+									"pm.test(`Last user should not have a priority`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    const resultlength = jsonData.result.length;",
+									"    pm.expect(jsonData.result[resultlength - 1].priority).to.be.null;",
+									"});",
+									"",
+									"const responseTimeExpected = 1000;",
+									"pm.test(`Response time is less than ${responseTimeExpected}ms`, function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(responseTimeExpected);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/users?search=Diether&limit=5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "Diether"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200 /users?search&start&limit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const statusCodeExpected = 200;",
+									"pm.test(\"Status code should be equal to \" + statusCodeExpected, function () {",
+									"    pm.response.to.have.status(statusCodeExpected);",
+									"});",
+									"",
+									"const schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"pagination\", \"result\"],",
+									"    \"properties\": {",
+									"        \"pagination\": {",
+									"            \"type\": \"object\",",
+									"            \"required\": [\"start\", \"limit\", \"count\"],",
+									"            \"properties\": {",
+									"                \"start\": {",
+									"                    \"type\": \"number\"",
+									"                },",
+									"                \"limit\": {",
+									"                    \"type\": \"number\"",
+									"                },",
+									"                \"count\": {",
+									"                    \"type\": \"number\"",
+									"                }",
+									"            }",
+									"        },",
+									"        \"result\": {",
+									"            \"type\": \"array\",",
+									"            \"items\": {",
+									"                \"type\": \"object\",",
+									"                \"required\": [\"id\", \"fullname\", \"username\", \"priority\"],",
+									"                \"properties\": {",
+									"                    \"id\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"fullname\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"username\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"priority\": {",
+									"                        \"oneOf\": [",
+									"                            { \"type\": \"null\" },",
+									"                            {",
+									"                                \"type\": \"object\",",
+									"                                \"required\": [\"user_id\", \"priority_num\"],",
+									"                                \"properties\": {",
+									"                                    \"user_id\": {",
+									"                                        \"type\": \"string\"",
+									"                                    },",
+									"                                    \"priority_num\": {",
+									"                                        \"type\": \"number\"",
+									"                                    }",
+									"                                }",
+									"                            }",
+									"                        ]",
+									"                    }",
+									"                }",
+									"            }",
+									"        }",
+									"    }",
+									"};",
+									"",
+									"pm.test('Response body should be validated by the JSON Schema', function () {",
+									"    pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
+									"});",
+									"",
+									"const paginationStartExpected = 50;",
+									"const paginationLimitExpected = 50;",
+									"pm.test(`Should return pagination start=${paginationStartExpected} and limit=${paginationLimitExpected}`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.pagination.start).to.eql(paginationStartExpected);",
+									"    pm.expect(jsonData.pagination.limit).to.eql(paginationLimitExpected);",
+									"});",
+									"",
+									"const userCountExpected = 50;",
+									"pm.test(`Should return ${userCountExpected} users.`, function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.pagination.count).to.eql(userCountExpected);",
+									"    pm.expect(jsonData.result.length).to.eql(userCountExpected);",
+									"});",
+									"",
+									"const responseTimeExpected = 1000;",
+									"pm.test(`Response time is less than ${responseTimeExpected}ms`, function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(responseTimeExpected);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/users?search=Diether&start=50&limit=50",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "Diether"
+								},
+								{
+									"key": "start",
+									"value": "50"
+								},
+								{
+									"key": "limit",
+									"value": "50"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "400 /users Without search parameter",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const statusCodeExpected = 400;",
+									"pm.test(\"Status code should be equal to \" + statusCodeExpected, function () {",
+									"    pm.response.to.have.status(statusCodeExpected);",
+									"});",
+									"",
+									"const schema = {",
+									"    \"type\": \"object\",",
+									"    \"required\": [\"statusCode\", \"message\"],",
+									"    \"properties\": {",
+									"        \"statusCode\": {",
+									"            \"type\": \"number\"",
+									"        },",
+									"        \"message\": {",
+									"            \"type\": \"string\"",
+									"        },",
+									"        \"errors\": {",
+									"            \"type\": \"array\",",
+									"            \"items\": {",
+									"                \"type\": \"object\",",
+									"                \"required\": [\"code\", \"field\", \"message\"],",
+									"                \"properties\": {",
+									"                    \"code\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"field\": {",
+									"                        \"type\": \"string\"",
+									"                    },",
+									"                    \"message\": {",
+									"                        \"type\": \"string\"",
+									"                    }",
+									"                }",
+									"            }",
+									"        }",
+									"    }",
+									"};",
+									"",
+									"pm.test('Response body should be validated by the JSON Schema', function () {",
+									"    pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
+									"});",
+									"",
+									"const messageExpected = \"The query parameter 'search' is required for this request. You should provide at least a keyword to search for.\";",
+									"pm.test('Message on request body should be ' + messageExpected, function () {",
+									"    pm.expect(pm.response.json().message).to.be.equal(messageExpected);",
+									"});",
+									"",
+									"pm.test('Status Code on request body should be ' + statusCodeExpected, function () {",
+									"    pm.expect(pm.response.json().statusCode).to.be.equal(statusCodeExpected);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users"
 							]
 						}
 					},
