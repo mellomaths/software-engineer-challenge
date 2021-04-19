@@ -12,7 +12,7 @@ export class UserEntity {
   @Column('text')
   username: string;
 
-  @OneToOne((type) => UserPriorityEntity, { eager: true, primary: true })
+  @OneToOne((type) => UserPriorityEntity, { primary: true })
   @JoinColumn({ name: 'id', referencedColumnName: 'user_id' })
   priority: UserPriorityEntity;
 
