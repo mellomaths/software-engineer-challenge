@@ -6,7 +6,7 @@ import { UserEntity } from '../entities/user.entity';
 import { RedisService } from '../../../infrastructure/redis/services/redis/redis.service';
 
 export interface FindUsersParams {
-  search?: string;
+  search: string;
   limit?: number;
   start?: number;
 }
@@ -37,15 +37,27 @@ export class UsersService {
     search = '',
     start = 0,
     limit = 100,
-  }: FindUsersParams = {}): Promise<ServiceResponse> {
+  }: FindUsersParams = { search: '' }): Promise<ServiceResponse> {
     const params = {
       search: search.toLowerCase(),
       start: parseInt(start.toString()),
       limit: parseInt(limit.toString()),
     };
     this.logger.log(`findUsers:: Searching for users using parameters: ${JSON.stringify(params)}`);
-    this.logger.log(`findUsers:: Checking if the payload is saved in cache.`);
+    if (!params.search) {
+      this.logger.log(`findUsers:: The parameter 'search' for searching by a keyword was not sent.`);
+      const response: ServiceResponse = { 
+        status: 400,
+        payload: {}, 
+        errors: [], 
+        description: 
+          "The query parameter 'search' is required for this request. You should provide at least a keyword to search for.", 
+      };
+      this.logger.log(`findUsers:: Returning response: ${response}`);
+      return response;
+    }
 
+    this.logger.log(`findUsers:: Checking if the payload is saved in cache.`);
     const cacheKey = this.cacheKey.of.findUsers(params);
     this.logger.log(`findUsers:: Cache Key: ${cacheKey}`);
     let users: UserEntity[] = await this.cacheManager.get(cacheKey);
