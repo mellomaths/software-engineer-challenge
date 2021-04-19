@@ -3,7 +3,7 @@ $$
     DECLARE 
         user_id_value VARCHAR;
         priority_one_cursor CURSOR FOR SELECT user_id FROM Tmp_Users_Priority_One;
-        priority_two_cursor CURSOR FOR SELECT user_id FROM Tmp_Users_Priority_One;
+        priority_two_cursor CURSOR FOR SELECT user_id FROM Tmp_Users_Priority_Two;
         
     BEGIN
         OPEN priority_one_cursor;
