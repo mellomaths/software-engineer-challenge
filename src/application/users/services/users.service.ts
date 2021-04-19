@@ -77,7 +77,7 @@ export class UsersService {
 
     this.logger.log(`findUsers:: Users searched was not found at cache, searching now the database.`);
     this.logger.log(`findUsers:: Building query for the database.`);
-    const take: number = params.start > 0 ? params.limit+1 : params.limit;
+    const take: number = params.start > 0 ? params.limit : params.limit+1;
     const query = this.usersRepository
       .createQueryBuilder('users')
       .leftJoinAndSelect('users.priority', 'priority')
