@@ -83,7 +83,7 @@ export class UsersService {
       .orderBy({
         'priority.priority_num': 'ASC'
       })
-      .take(params.limit)
+      .take(params.limit + 1)
       .skip(params.start);
 
     if (params.search) {
