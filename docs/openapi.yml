@@ -1,0 +1,267 @@
+openapi: 3.0.0
+info:
+  title: API Users Finder
+  description: A API to search for users registered in the system.
+  version: 1.0.0
+servers:
+  - url: http://api.picpay.com.br/v1/users
+    description: Production
+  - url: http://staging-api.picpay.com.br/v1/users
+    description: Stage
+  - url: http://dev-api.picpay.com.br/v1/users
+    description: Development
+  - url: http://localhost:3000/api/v1/users
+    description: Local
+paths:
+  /auth/identity:
+    post:
+      summary: New Client.
+      tags: 
+        - auth
+      description: Create a Client to use the API endpoints.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/authenticationClient'
+      responses:
+        '201':
+          description: Client successfully created.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: 
+                  - "id"
+                properties:
+                  id:
+                    type: string
+                    description: ID of the Client created.
+        '422':
+          description: The username requested already exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /auth/login:
+    post:
+      summary: Client login.
+      tags: 
+        - auth
+      description: Uses a Client previously created to login and generate a JWT.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/authenticationClient'
+      responses:
+        '201':
+          description: Client successfully created.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: 
+                  - "id"
+                properties:
+                  id:
+                    type: string
+                    description: ID of the Client created.
+        '401':
+          description: Unauthorized. The Client probably sent a wrong password attempt or the username sent does not exist in the system.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+                
+  /auth/profile:
+    get:
+      summary: Get the client logged in profile.
+      tags: 
+        - auth
+      description: Uses a Client previously created to login and generate a JWT.
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Client successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/clientProfile'
+        '401':
+          description: Unauthorized. Username and/or Password were sent incorrectly.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /users:
+    get:
+      summary: List of users registered.
+      tags:
+        - users
+      description: Returns a list of users search by a keyword.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: search
+          required: true
+          in: query
+          description: Search keyword to find users. It can be Username or either User's fullname.
+          schema:
+            type: string
+        - name: start
+          required: false
+          in: query
+          description: Number of elements to skip in the pagination.
+          schema:
+            type: string
+        - name: limit
+          required: false
+          in: query
+          description: Limit used for paginating.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of users found.
+          content:
+            application/json:
+              schema: 
+                type: object
+                required:
+                  - "pagination"
+                  - "result"
+                properties:
+                  pagination:
+                    $ref: '#/components/schemas/pagination'
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/user'
+        '400':
+          description: Bad request. Check if fields were sent correctly.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT 
+  schemas:
+    authenticationClient:
+      type: object
+      required: 
+        - "username"
+        - "password"
+      properties:
+        username:
+          type: string
+          description: Username of the Client to be used for login.
+        password:
+          type: string
+          description: Password of the Client to login.
+    clientProfile:
+      type: object
+      required:
+        - "id"
+        - "createdAt"
+        - "lastUpdateAt"
+        - "username"
+      properties:
+        id: 
+          type: string
+          description: ID of the Client logged in.
+        createdAt:
+          type: string
+          format: date
+          description: Client creation date.
+        lastUpdateAt:
+          type: string
+          format: date
+          description: Last time when the Client profile was updated.
+        username:
+          type: string
+          description: Client username.
+    pagination:
+      type: object
+      required: 
+        - "start"
+        - "limit"
+        - "count"
+      properties:
+        start:
+          type: number
+          description: Number of elements that this page skipped.
+        limit:
+          type: number
+          description: Limit used for paginating.
+        count:
+          type: number
+          description: Count of elements presented at the list result.
+    user:
+      type: object
+      required: 
+        - "id"
+        - "fullname"
+        - "username"
+        - "priority"
+      properties:
+        id:
+          type: string
+          description: User ID.
+        fullname:
+          type: string
+          description: User full name.
+        username: 
+          type: string
+          description: Username of the User.
+        priority:
+          type: object
+          required:
+            - "user_id"
+            - "priority_num"
+          properties:
+            user_id:
+              type: string
+              description: User ID, same value of "id" property.
+            priority_num:
+              type: number
+              description: User priority when listing users. The lowest the number the higher priority to be shown at this list. 
+    error:
+      type: object
+      required: 
+        - "statusCode"
+        - "message"
+      properties:
+        statusCode:
+          type: string
+          description: The Status Code of the request response.
+        message:
+          type: string
+          description: A short description of what happened.
+        errors:
+          type: array
+          items:
+            type: object
+            required:
+              - "code"
+              - "field"
+              - "message"
+            properties:
+              code:
+                type: string
+                enum:
+                  - "CONFLICT"
+                description: A validation error code for the error that happened.
+              field:
+                type: string
+                description: Defines what field in the request payload has an error.
+              message:
+                type: string
+                description: A detailed description about what is wrong with the field passed on request payload.
+                  
+                  
