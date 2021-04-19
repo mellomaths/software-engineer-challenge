@@ -34,3 +34,17 @@ Faça um ***Fork*** deste repositório e abra um ***Pull Request***, **com seu n
 - Ter um desempenho elevado num conjunto de dados muito grande;
 - Criar testes automatizados;
 - Seja Cloud native;
+
+# Implementation
+
+## Cache using Redis
+
+## Scripts SQL (Functions)
+
+## Unit tests using Jest
+
+## Integration tests using Postman/Newman
+
+## Continuos Integration with Travis CI
+
+## REST API Documentation with Open API (Swagger)
