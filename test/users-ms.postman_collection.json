@@ -78,7 +78,7 @@
 					"response": []
 				},
 				{
-					"name": "401 /auth/identity User already registered",
+					"name": "422 /auth/identity User already registered",
 					"event": [
 						{
 							"listen": "test",
